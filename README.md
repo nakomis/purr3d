@@ -1,5 +1,7 @@
 # Purr3D — A first-person Unreal Engine walk through Purr
 
+<img src="docs/logo.png" alt="Purr3D logo: Mu, Tau, Chi and Kappa as 3D cat heads" width="200" align="right"/>
+
 ## Support
 
 If you find this useful, please consider buying me a coffee:
