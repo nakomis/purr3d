@@ -13,16 +13,31 @@
 
 # Binary assets under Assets/ go to Git LFS.
 # Images under docs/ stay as plain git objects so the README renders anywhere.
-Assets/**/*.png  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.jpg  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.tga  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.exr  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.psd  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.glb  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.fbx  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.wav  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.ogg  filter=lfs diff=lfs merge=lfs -text
-Assets/**/*.mp4  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[pP][nN][gG] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[jJ][pP][gG] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[jJ][pP][eE][gG] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[tT][gG][aA] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[tT][iI][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[tT][iI][fF][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[eE][xX][rR] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[hH][dD][rR] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[pP][sS][dD] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[bB][mM][pP] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[gG][iI][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[gG][lL][bB] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[gG][lL][tT][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[fF][bB][xX] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[oO][bB][jJ] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[bB][lL][eE][nN][dD] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[wW][aA][vV] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[oO][gG][gG] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[mM][pP]3 filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[aA][iI][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[aA][iI][fF][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[mM][pP]4 filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[mM][oO][vV] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[tT][tT][fF] filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.[oO][tT][fF] filter=lfs diff=lfs merge=lfs -text
 
 ArtSource/** filter=lfs diff=lfs merge=lfs -text
 ArtSource/**/.gitkeep !filter !diff !merge text
