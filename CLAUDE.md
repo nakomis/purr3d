@@ -8,7 +8,7 @@ This project is for **learning Unreal**, not shipping a product. Martin does the
 
 ## Stack
 
-- Unreal Engine 5 (latest 5.x), First Person C++ template, macOS on Apple Silicon. C++ builds through Xcode.
+- Unreal Engine **5.8** (`UE_ROOT="/Users/Shared/Epic Games/UE_5.8"`), First Person C++ template, macOS on Apple Silicon. C++ builds through Xcode.
 - `Source/Purr3D/PurrApi/`: `UPurrApiSubsystem` (a GameInstanceSubsystem) wraps the Purr REST API using `HttpModule` and `Json`, and hands `USTRUCT`s to Blueprints through dynamic multicast delegates. Gameplay logic lives in Blueprints.
 - Art comes from the ArtCraft suite (see README). Working files go in `ArtSource/<App>/`, which is stored in LFS.
 

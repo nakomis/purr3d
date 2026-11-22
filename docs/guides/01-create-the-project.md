@@ -5,14 +5,15 @@ The repo already has the Purr API client in `Source/Purr3D/PurrApi/` and its tes
 ## 1. Install
 
 1. Install the **Epic Games Launcher** from epicgames.com and sign in.
-2. Go to **Unreal Engine → Library → +** and install the latest **5.x**. It's about 40 GB, so leave it running.
+2. Go to **Unreal Engine → Library → +** and install **5.8**. Under **Options**, untick the platforms you won't target (Android, iOS, Linux, TVOS, VisionOS) and skip "Editor symbols for debugging". It installs to `/Users/Shared/Epic Games/UE_5.8`.
+   Every command below assumes `export UE_ROOT="/Users/Shared/Epic Games/UE_5.8"`.
 3. Open Xcode once and accept the licence. Unreal compiles C++ with Xcode's toolchain.
 
 ## 2. Generate the template somewhere else
 
 Don't generate straight into the repo. The launcher wants an empty folder, and macOS's case-insensitive file system treats `Purr3D` and `purr3d` as the same folder.
 
-1. Launch UE 5.x, then **Games → First Person**.
+1. Launch UE 5.8, then **Games → First Person**.
 2. Choose **C++** (not Blueprint), set Starter Content **off**, and leave the target platform as Desktop.
 3. Set the location to `~/Desktop/ue-scratch` and the name to **`Purr3D`**. The name becomes the module name, and the code in this repo assumes `Purr3D` (`PURR3D_API`, `/Script/Purr3D.…`).
 4. Click **Create**. It compiles and opens the editor. Close the editor.
