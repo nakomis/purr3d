@@ -12,7 +12,7 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 
 ## Stack
 
-- **Unity 6 LTS** with the Universal Render Pipeline, on macOS (Intel). Unity marks Intel as deprecated from 6.6, but it's still supported.
+- **Unity 6.6 (`6000.6.10f1`)** with the Universal Render Pipeline, on macOS (Intel). Unity marks Intel as deprecated from 6.6, but it's still supported.
 - **`Assets/Purr3D/Core/`** is engine-free C# (`Purr3D.Core.asmdef`, `noEngineReferences: true`): Purr's types, JSON parsing with Newtonsoft, `StateCycle`, and `PurrClient`, which talks HTTP only through the `IPurrTransport` port. Keep `UnityEngine` out of it, so `dotnet test` can exercise it without Unity.
 - **`Assets/Purr3D/Runtime/`** is the Unity side: `UnityWebRequestTransport`, settings loading, and the `PurrService` MonoBehaviour that scenes use.
 - **C# 9 only** in `Core` and `Runtime`, because that's Unity's ceiling. No file-scoped namespaces, `required`, raw string literals or `init`-only setters in Core. The test project pins `LangVersion` 9 to enforce it.
@@ -37,7 +37,8 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 
 ## Testing
 
-- `dotnet test tests/Purr3D.Core.Tests` runs the Core NUnit tests. The .NET 8 SDK comes from asdf: `asdf set dotnet 8.0.424` in this repo. CI runs the same command on every PR.
+- `dotnet test tests/Purr3D.Core.Tests/Purr3D.Core.Tests.csproj` runs the Core NUnit tests. `global.json` pins the .NET 8 SDK, because newer SDKs change `dotnet test` behaviour. The .NET 8 SDK comes from asdf: `asdf set dotnet 8.0.424` in this repo. CI runs the same command on every PR.
+- `Runtime` can be compile-checked without opening the editor. Build a throwaway `netstandard2.1` / C# 9 project that includes `Assets/Purr3D/**/*.cs` and references `UnityEngine.CoreModule.dll` and `UnityEngine.UnityWebRequestModule.dll` from `/Applications/Unity/Hub/Editor/6000.6.10f1/PlaybackEngines/MacStandaloneSupport/Variations/mono/Managed/`.
 - Editor-side behaviour gets checked in Play mode. There's no Unity in CI.
 
 ## Architecture diagrams

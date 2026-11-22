@@ -149,7 +149,9 @@ PurrSecrets.json
 PurrSecrets.ini
 Config/PurrSecrets*
 
-# .NET test project output (tests/ runs the core logic without Unity)
+# .NET test project (tests/ runs the core logic without Unity). Unity's template
+# ignores *.csproj because Unity generates its own, so un-ignore ours.
+!tests/**/*.csproj
 tests/**/bin/
 tests/**/obj/
 TestResults/
