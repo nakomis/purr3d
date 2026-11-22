@@ -164,3 +164,6 @@ TestResults/
 
 # Captured API responses used while developing
 scratch/
+
+# Local printouts of the guides
+docs/guides/*.pdf
