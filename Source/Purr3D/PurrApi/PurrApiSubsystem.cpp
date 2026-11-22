@@ -75,10 +75,10 @@ void UPurrApiSubsystem::FetchProjects()
 
 void UPurrApiSubsystem::FetchTasks(const FString& Prefix)
 {
-	FetchTaskPage(Prefix, FString(), MakeShared<TArray<FPurrTask>>());
+	FetchTaskPage(Prefix, FString(), MakeShared<TArray<FPurrTask>>(), 1);
 }
 
-void UPurrApiSubsystem::FetchTaskPage(const FString& Prefix, const FString& Cursor, TSharedRef<TArray<FPurrTask>> Accumulated)
+void UPurrApiSubsystem::FetchTaskPage(const FString& Prefix, const FString& Cursor, TSharedRef<TArray<FPurrTask>> Accumulated, int32 PageNumber)
 {
 	FString Path = FString::Printf(TEXT("/projects/%s/tasks?all=true&limit=%d"), *FGenericPlatformHttp::UrlEncode(Prefix), PageSize);
 	if (!Cursor.IsEmpty())
@@ -88,7 +88,7 @@ void UPurrApiSubsystem::FetchTaskPage(const FString& Prefix, const FString& Curs
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = MakeRequest(TEXT("GET"), Path);
 	TWeakObjectPtr<UPurrApiSubsystem> WeakThis(this);
-	Request->OnProcessRequestComplete().BindLambda([WeakThis, Prefix, Accumulated](FHttpRequestPtr, FHttpResponsePtr Response, bool bConnected)
+	Request->OnProcessRequestComplete().BindLambda([WeakThis, Prefix, Accumulated, PageNumber](FHttpRequestPtr, FHttpResponsePtr Response, bool bConnected)
 	{
 		UPurrApiSubsystem* Self = WeakThis.Get();
 		if (!Self) return;
@@ -104,9 +104,13 @@ void UPurrApiSubsystem::FetchTaskPage(const FString& Prefix, const FString& Curs
 		{
 			Self->OnTasksLoaded.Broadcast(Prefix, *Accumulated);
 		}
+		else if (PageNumber >= MaxPages)
+		{
+			Self->OnError.Broadcast(TEXT("FetchTasks"), Prefix, 0, FString::Printf(TEXT("gave up after %d pages"), MaxPages));
+		}
 		else
 		{
-			Self->FetchTaskPage(Prefix, NextCursor, Accumulated);
+			Self->FetchTaskPage(Prefix, NextCursor, Accumulated, PageNumber + 1);
 		}
 	});
 	Request->ProcessRequest();

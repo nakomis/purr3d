@@ -1,6 +1,7 @@
 #include "PurrJson.h"
 
 #include "Dom/JsonObject.h"
+#include "Dom/JsonValue.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
@@ -27,6 +28,12 @@ namespace
 	{
 		double Value = 0.0;
 		return Json->TryGetNumberField(Field, Value) ? FMath::RoundToInt32(Value) : Default;
+	}
+
+	/** The element as an object, or null. AsObject() on a non-object logs an error, so check first. */
+	TSharedPtr<FJsonObject> AsObjectOrNull(const TSharedPtr<FJsonValue>& Value)
+	{
+		return (Value.IsValid() && Value->Type == EJson::Object) ? Value->AsObject() : nullptr;
 	}
 
 	bool ParseState(const TSharedPtr<FJsonObject>& Json, FPurrState& Out)
@@ -69,7 +76,7 @@ bool PurrJson::ParseProject(const TSharedPtr<FJsonObject>& Json, FPurrProject& O
 		for (const TSharedPtr<FJsonValue>& Value : *States)
 		{
 			FPurrState State;
-			if (ParseState(Value->AsObject(), State))
+			if (ParseState(AsObjectOrNull(Value), State))
 			{
 				Out.States.Add(State);
 			}
@@ -113,7 +120,7 @@ bool PurrJson::ParseProjectList(const FString& Body, TArray<FPurrProject>& Out)
 	for (const TSharedPtr<FJsonValue>& Value : *Items)
 	{
 		FPurrProject Project;
-		if (ParseProject(Value->AsObject(), Project))
+		if (ParseProject(AsObjectOrNull(Value), Project))
 		{
 			Out.Add(MoveTemp(Project));
 		}
@@ -133,7 +140,7 @@ bool PurrJson::ParseTaskPage(const FString& Body, TArray<FPurrTask>& Out, FStrin
 	for (const TSharedPtr<FJsonValue>& Value : *Items)
 	{
 		FPurrTask Task;
-		if (ParseTask(Value->AsObject(), Task))
+		if (ParseTask(AsObjectOrNull(Value), Task))
 		{
 			Out.Add(MoveTemp(Task));
 		}

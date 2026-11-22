@@ -68,7 +68,7 @@ private:
 	/** Builds an authenticated request. Verb is GET or POST. */
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(const FString& Verb, const FString& Path) const;
 
-	void FetchTaskPage(const FString& Prefix, const FString& Cursor, TSharedRef<TArray<FPurrTask>> Accumulated);
+	void FetchTaskPage(const FString& Prefix, const FString& Cursor, TSharedRef<TArray<FPurrTask>> Accumulated, int32 PageNumber);
 
 	/** Broadcasts OnError from a failed response, using Purr's error body when there is one. */
 	void Fail(const FString& Operation, const FString& Subject, FHttpResponsePtr Response, bool bConnected);
@@ -78,4 +78,7 @@ private:
 
 	/** Tasks per page. The API caps it; 100 keeps a big project to a handful of requests. */
 	static constexpr int32 PageSize = 100;
+
+	/** Insurance against a server that never stops returning a cursor: 200 x 100 tasks is plenty. */
+	static constexpr int32 MaxPages = 200;
 };
