@@ -26,4 +26,4 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: dotnet test (Assets/Purr3D/Core, no Unity)
-        run: dotnet test tests/Purr3D.Core.Tests --logger "console;verbosity=normal"
+        run: dotnet --version && dotnet test tests/Purr3D.Core.Tests/Purr3D.Core.Tests.csproj --logger "console;verbosity=normal"

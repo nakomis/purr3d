@@ -37,7 +37,7 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 
 ## Testing
 
-- `dotnet test tests/Purr3D.Core.Tests` runs the Core NUnit tests. The .NET 8 SDK comes from asdf: `asdf set dotnet 8.0.424` in this repo. CI runs the same command on every PR.
+- `dotnet test tests/Purr3D.Core.Tests/Purr3D.Core.Tests.csproj` runs the Core NUnit tests. `global.json` pins the .NET 8 SDK, because newer SDKs change `dotnet test` behaviour. The .NET 8 SDK comes from asdf: `asdf set dotnet 8.0.424` in this repo. CI runs the same command on every PR.
 - `Runtime` can be compile-checked without opening the editor. Build a throwaway `netstandard2.1` / C# 9 project that includes `Assets/Purr3D/**/*.cs` and references `UnityEngine.CoreModule.dll` and `UnityEngine.UnityWebRequestModule.dll` from `/Applications/Unity/Hub/Editor/6000.6.10f1/PlaybackEngines/MacStandaloneSupport/Variations/mono/Managed/`.
 - Editor-side behaviour gets checked in Play mode. There's no Unity in CI.
 
