@@ -13,19 +13,19 @@
           <mxGeometry x="10" y="110" width="40" height="70" as="geometry"/>
         </mxCell>
 
-        <mxCell id="ue" value="Unreal Engine 5 · Purr3D" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
+        <mxCell id="ue" value="Unity 6 (URP) · Purr3D" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
           <mxGeometry x="150" y="50" width="560" height="300" as="geometry"/>
         </mxCell>
-        <mxCell id="bp" value="&lt;b&gt;Blueprints&lt;/b&gt;&lt;br&gt;corridor spawner · room builder&lt;br&gt;task actor · projectile · HUD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="bp" value="&lt;b&gt;Scenes &amp;amp; MonoBehaviours&lt;/b&gt;&lt;br&gt;corridor builder · room builder&lt;br&gt;task prefab · projectile · HUD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="170" y="90" width="190" height="100" as="geometry"/>
         </mxCell>
-        <mxCell id="sub" value="&lt;b&gt;UPurrApiSubsystem&lt;/b&gt; (C++)&lt;br&gt;PurrJson · PurrStateCycle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="sub" value="&lt;b&gt;PurrService&lt;/b&gt; → &lt;b&gt;PurrClient&lt;/b&gt;&lt;br&gt;Core: PurrJson · StateCycle&lt;br&gt;IPurrTransport ← UnityWebRequest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="490" y="100" width="200" height="80" as="geometry"/>
         </mxCell>
-        <mxCell id="ini" value="Config/DefaultGame.ini (BaseUrl)&lt;br&gt;Config/PurrSecrets.ini (ApiKey, gitignored)" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+        <mxCell id="ini" value="UserSettings/PurrSecrets.json&lt;br&gt;baseUrl · apiKey (gitignored)" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="480" y="250" width="210" height="60" as="geometry"/>
         </mxCell>
-        <mxCell id="content" value="&lt;b&gt;Content/&lt;/b&gt; (Git LFS)&lt;br&gt;meshes · textures · sounds" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="content" value="&lt;b&gt;Assets/&lt;/b&gt; (binaries in Git LFS)&lt;br&gt;meshes · textures · sounds" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="190" y="240" width="150" height="80" as="geometry"/>
         </mxCell>
 
@@ -88,7 +88,7 @@
         <mxCell id="sound" value="&lt;b&gt;SoundCraft&lt;/b&gt;&lt;br&gt;footsteps · doors · shot · errors" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="40" y="750" width="190" height="50" as="geometry"/>
         </mxCell>
-        <mxCell id="ue-import" value="&lt;b&gt;Unreal import&lt;/b&gt;&lt;br&gt;glTF importer · textures · sound waves&lt;br&gt;Material Instances (per-project colour)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="ue-import" value="&lt;b&gt;Unity import&lt;/b&gt;&lt;br&gt;glTFast · textures · audio clips&lt;br&gt;URP materials (per-project colour)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
           <mxGeometry x="600" y="600" width="230" height="80" as="geometry"/>
         </mxCell>
         <mxCell id="film" value="&lt;b&gt;FilmCraft&lt;/b&gt;&lt;br&gt;walkthrough video for the blog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
@@ -121,7 +121,7 @@
         <mxCell id="e-sound" value="WAV" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="sound" target="ue-import">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e-import-content" value="into Content/" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" edge="1" parent="1" source="ue-import" target="content">
+        <mxCell id="e-import-content" value="into Assets/" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" edge="1" parent="1" source="ue-import" target="content">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="715" y="380"/>

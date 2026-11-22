@@ -1,19 +1,28 @@
-# Unreal assets and art sources are binary: keep them in Git LFS.
-# Images under docs/ stay as plain git objects so the README renders anywhere.
-*.uasset filter=lfs diff=lfs merge=lfs -text
-*.umap filter=lfs diff=lfs merge=lfs -text
+# Unity serialises scenes, prefabs and assets as YAML text (Force Text mode):
+# keep them in git as text, merged with UnityYAMLMerge where configured.
+*.unity    text eol=lf merge=unityyamlmerge
+*.prefab   text eol=lf merge=unityyamlmerge
+*.asset    text eol=lf merge=unityyamlmerge
+*.mat      text eol=lf merge=unityyamlmerge
+*.anim     text eol=lf merge=unityyamlmerge
+*.controller text eol=lf merge=unityyamlmerge
+*.meta     text eol=lf
+*.cs       text eol=lf
+*.asmdef   text eol=lf
+*.json     text eol=lf
 
-Content/**/*.png filter=lfs diff=lfs merge=lfs -text
-Content/**/*.tga filter=lfs diff=lfs merge=lfs -text
-Content/**/*.exr filter=lfs diff=lfs merge=lfs -text
-Content/**/*.wav filter=lfs diff=lfs merge=lfs -text
+# Binary assets under Assets/ go to Git LFS.
+# Images under docs/ stay as plain git objects so the README renders anywhere.
+Assets/**/*.png  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.jpg  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.tga  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.exr  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.psd  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.glb  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.fbx  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.wav  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.ogg  filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.mp4  filter=lfs diff=lfs merge=lfs -text
 
 ArtSource/** filter=lfs diff=lfs merge=lfs -text
 ArtSource/**/.gitkeep !filter !diff !merge text
-
-# Text that should stay text
-*.ini text eol=lf
-*.cpp text eol=lf
-*.h text eol=lf
-*.cs text eol=lf
-*.uproject text eol=lf
