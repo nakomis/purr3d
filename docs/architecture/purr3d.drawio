@@ -1,0 +1,138 @@
+<mxfile host="drawio">
+  <diagram id="purr3d" name="Purr3D">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1480" pageHeight="820" math="0" shadow="0" adaptiveColors="auto">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title-runtime" value="&lt;b&gt;Runtime&lt;/b&gt;: live Purr data in the game" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="420" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="player" value="Martin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="110" width="40" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ue" value="Unreal Engine 5 · Purr3D" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="150" y="50" width="560" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="bp" value="&lt;b&gt;Blueprints&lt;/b&gt;&lt;br&gt;corridor spawner · room builder&lt;br&gt;task actor · projectile · HUD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="170" y="90" width="190" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="sub" value="&lt;b&gt;UPurrApiSubsystem&lt;/b&gt; (C++)&lt;br&gt;PurrJson · PurrStateCycle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="490" y="100" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ini" value="Config/DefaultGame.ini (BaseUrl)&lt;br&gt;Config/PurrSecrets.ini (ApiKey, gitignored)" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="250" width="210" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="content" value="&lt;b&gt;Content/&lt;/b&gt; (Git LFS)&lt;br&gt;meshes · textures · sounds" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="190" y="240" width="150" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="cf" value="&lt;b&gt;CloudFront&lt;/b&gt;&lt;br&gt;purr.sandbox.nakomis.com&lt;br&gt;/api/*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="880" y="100" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="lambda" value="&lt;b&gt;Purr API Lambda&lt;/b&gt;&lt;br&gt;auth: x-api-key → actor purr3d" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="100" width="170" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ddb" value="&lt;b&gt;DynamoDB&lt;/b&gt;&lt;br&gt;purr-{env}" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="100" width="130" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="ssm" value="&lt;b&gt;SSM&lt;/b&gt; SecureString&lt;br&gt;/purr/{env}/api-keys/purr3d" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="250" width="190" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e-play" value="walk · jump · shoot" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="player" target="bp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-bp-sub" value="calls · delegates" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;startArrow=classic;" edge="1" parent="1" source="bp" target="sub">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-ini" value="reads" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" edge="1" parent="1" source="ini" target="sub">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-content" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="content" target="bp">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-https" value="HTTPS + x-api-key&lt;br&gt;GET /projects · GET …/tasks&lt;br&gt;POST /tasks/{ref}/state" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="sub" target="cf">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-cf-l" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="cf" target="lambda">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-l-ddb" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=classic;" edge="1" parent="1" source="lambda" target="ddb">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-ssm" value="scripts/fetch-api-key.sh" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" edge="1" parent="1" source="ssm" target="ini">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="title-pipeline" value="&lt;b&gt;Asset pipeline&lt;/b&gt;: the ArtCraft suite" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="420" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="solid" value="&lt;b&gt;SolidCraft&lt;/b&gt;&lt;br&gt;door frame · task object · blaster" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="450" width="190" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="material" value="&lt;b&gt;MaterialCraft&lt;/b&gt;&lt;br&gt;tileable PBR surfaces" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="190" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="texture" value="&lt;b&gt;TextureCraft&lt;/b&gt;&lt;br&gt;paint props · bake maps" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="330" y="490" width="170" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="vector" value="&lt;b&gt;VectorCraft&lt;/b&gt;&lt;br&gt;crosshair · HUD · door signs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="190" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="photo" value="&lt;b&gt;PhotoCraft&lt;/b&gt;&lt;br&gt;decals · grime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="685" width="190" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="sound" value="&lt;b&gt;SoundCraft&lt;/b&gt;&lt;br&gt;footsteps · doors · shot · errors" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="750" width="190" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ue-import" value="&lt;b&gt;Unreal import&lt;/b&gt;&lt;br&gt;glTF importer · textures · sound waves&lt;br&gt;Material Instances (per-project colour)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="600" y="600" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="film" value="&lt;b&gt;FilmCraft&lt;/b&gt;&lt;br&gt;walkthrough video for the blog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="920" y="610" width="190" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e-solid" value="mesh" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="solid" target="texture">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-material" value="Send to TextureCraft" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="material" target="texture">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-material-ue" value="surface maps" style="entryX=0;entryY=0.4;entryDx=0;entryDy=0;verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="material" target="ue-import">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="260" y="575"/>
+              <mxPoint x="260" y="632"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-texture" value="GLB + textures" style="entryX=0;entryY=0.15;entryDx=0;entryDy=0;verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="texture" target="ue-import">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-vector" value="PNG" style="entryX=0;entryY=0.65;entryDx=0;entryDy=0;verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="vector" target="ue-import">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-photo" value="PNG" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="photo" target="ue-import">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-sound" value="WAV" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="sound" target="ue-import">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-import-content" value="into Content/" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" edge="1" parent="1" source="ue-import" target="content">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="715" y="380"/>
+              <mxPoint x="235" y="380"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-film" value="gameplay capture" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="ue-import" target="film">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
