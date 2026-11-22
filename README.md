@@ -1,4 +1,4 @@
-# Purr3D — A first-person Unreal Engine walk through Purr
+# Purr3D — A first-person Unity walk through Purr
 
 <img src="docs/logo.png" alt="Purr3D logo: Mu, Tau, Chi and Kappa as 3D cat heads" width="200" align="right"/>
 
@@ -31,7 +31,7 @@ If you find this useful, please consider buying me a coffee:
 - **Jump on a task** to read its ref, title, state and points.
 - **Shoot a task** to move it to the next state. It flies across the room to its new zone. If the Purr API refuses the change, the task snaps back.
 
-The project is mostly a way to learn Unreal Engine 5, with an art pipeline built on the [ArtCraft](https://getartcraft.com) suite.
+It's a fun side project built in Unity 6, with an art pipeline based on the [ArtCraft](https://getartcraft.com) suite.
 
 ## Architecture Diagram
 
@@ -41,15 +41,17 @@ The project is mostly a way to learn Unreal Engine 5, with an art pipeline built
 
 | Path | What lives there |
 |---|---|
-| `Purr3D.uproject`, `Source/`, `Config/`, `Content/` | The Unreal Engine 5 project, generated from the First Person C++ template |
-| `Source/Purr3D/PurrApi/` | `UPurrApiSubsystem`: the C++ client for the Purr REST API, exposed to Blueprints |
+| `Assets/`, `Packages/`, `ProjectSettings/` | The Unity 6 project (URP) |
+| `Assets/Purr3D/Core/` | Engine-free C#: Purr's types, JSON parsing, the state-cycling rule and the API client, behind an `IPurrTransport` port |
+| `Assets/Purr3D/Runtime/` | The Unity side: a `UnityWebRequest` transport, settings, and the `PurrService` MonoBehaviour that scenes talk to |
+| `tests/Purr3D.Core.Tests/` | NUnit tests for `Core`, run with plain `dotnet test`, so no Unity is needed (CI runs them too) |
 | `ArtSource/` | Working files from the ArtCraft apps (MaterialCraft, TextureCraft, SolidCraft, VectorCraft, PhotoCraft, SoundCraft, FilmCraft), stored in Git LFS |
 | `docs/guides/` | Step-by-step guides for the editor-side work |
 | `docs/architecture/` | The architecture diagram |
 
 ## Getting started
 
-1. Install the Epic Games Launcher, then Unreal Engine 5 and Xcode.
+1. Install Unity Hub, then the latest **Unity 6 LTS** editor.
 2. Clone, then set up hooks and LFS:
 
    ```bash
@@ -61,16 +63,17 @@ The project is mostly a way to learn Unreal Engine 5, with an art pipeline built
 
    `.githooks/` holds the Git LFS hooks as well as the diagram/TOC pre-commit hook. Pointing `core.hooksPath` anywhere else would quietly stop LFS files being pushed.
 
-3. Create `Config/PurrSecrets.ini`. It is gitignored:
+3. Fetch the API key (needs AWS access to the Purr account):
 
-   ```ini
-   [/Script/Purr3D.PurrApiSubsystem]
-   ApiKey=<a Purr API key for the purr3d actor>
+   ```bash
+   scripts/fetch-api-key.sh          # sandbox; or: scripts/fetch-api-key.sh prod
    ```
 
-   As an alternative, export `PURR_API_KEY` before launching the editor. The base URL is set in `Config/DefaultGame.ini` and points at the sandbox Purr by default.
+   This writes `UserSettings/PurrSecrets.json` (per-user, gitignored), which holds the base URL and the `purr3d` actor's key.
 
-4. Open `Purr3D.uproject`.
+4. Open the folder in Unity Hub (**Add → Add project from disk**).
+
+5. Run the core tests with `dotnet test tests/Purr3D.Core.Tests`.
 
 ## ArtCraft pipeline
 
@@ -78,7 +81,7 @@ The project is mostly a way to learn Unreal Engine 5, with an art pipeline built
 |---|---|
 | MaterialCraft | Tileable PBR surfaces for the corridor, doors and room floors. Each project gets its own colour through a Material Instance parameter. |
 | SolidCraft | Door frames, the task object and the blaster |
-| TextureCraft | Paints those props with MaterialCraft materials and exports GLB for Unreal |
+| TextureCraft | Paints those props with MaterialCraft materials and exports GLB for Unity |
 | VectorCraft | Crosshair, HUD and door-sign graphics |
 | PhotoCraft | Decals and grime |
 | SoundCraft | Footsteps, doors, the shot, and the sounds for a state change and a rejected change |

@@ -1,44 +1,44 @@
 # Purr3D
 
-A first-person Unreal Engine 5 walk through Purr's live data: projects are doors, and tasks are objects you can jump on and shoot. Shooting a task moves it to the next state.
+A first-person Unity 6 walk through Purr's live data: projects are doors, and tasks are objects you can jump on and shoot. Shooting a task moves it to the next state.
+
+## History
+
+The project began on Unreal Engine 5. It moved to Unity on 2026-11-22 because UE 5.8 dropped rendering on Intel Macs, and Martin's machine is a 2019 Intel MacBook Pro (i9-9980HK, Radeon Pro 5500M, 32 GB). The Unreal C++ is kept for reference on the unmerged branch `purr3d-3-api-subsystem` (PR #3, closed). **Check hardware before recommending tools:** this Mac is x86_64.
 
 ## Purpose
 
-This project is for **learning Unreal**, not shipping a product. Martin does the editor work himself: Blueprints, levels and the art pass. Claude writes C++ and guides, and explains the Unreal concepts as they come up. Don't hand Martin a finished Blueprint recipe when he'd learn more from understanding why it works. `docs/learning-log.md` records what each concept turned out to mean.
+A fun side project. Martin has used Unity before, so the aim is building the thing and enjoying it, with the ArtCraft art pipeline as the other half. He still does the editor work: scenes, prefabs and the art pass. Claude writes C#, tests and guides.
 
 ## Stack
 
-- Unreal Engine 5 (latest 5.x), First Person C++ template, macOS on Apple Silicon. C++ builds through Xcode.
-- `Source/Purr3D/PurrApi/`: `UPurrApiSubsystem` (a GameInstanceSubsystem) wraps the Purr REST API using `HttpModule` and `Json`, and hands `USTRUCT`s to Blueprints through dynamic multicast delegates. Gameplay logic lives in Blueprints.
+- **Unity 6 LTS** with the Universal Render Pipeline, on macOS (Intel). Unity marks Intel as deprecated from 6.6, but it's still supported.
+- **`Assets/Purr3D/Core/`** is engine-free C# (`Purr3D.Core.asmdef`, `noEngineReferences: true`): Purr's types, JSON parsing with Newtonsoft, `StateCycle`, and `PurrClient`, which talks HTTP only through the `IPurrTransport` port. Keep `UnityEngine` out of it, so `dotnet test` can exercise it without Unity.
+- **`Assets/Purr3D/Runtime/`** is the Unity side: `UnityWebRequestTransport`, settings loading, and the `PurrService` MonoBehaviour that scenes use.
+- **C# 9 only** in `Core` and `Runtime`, because that's Unity's ceiling. No file-scoped namespaces, `required`, raw string literals or `init`-only setters in Core. The test project pins `LangVersion` 9 to enforce it.
+- Newtonsoft comes from `com.unity.nuget.newtonsoft-json` in Unity, and from NuGet `Newtonsoft.Json` in the test project.
 - Art comes from the ArtCraft suite (see README). Working files go in `ArtSource/<App>/`, which is stored in LFS.
 
 ## The Purr API
 
-- Base URL in `Config/DefaultGame.ini`. The default is sandbox: `https://purr.sandbox.nakomis.com/api`. Prod is `https://purr.nakomis.com/api`.
-- Auth: the `x-api-key` header carries a key issued to the **`purr3d`** actor. Changes made by the game show up as `purr3d` in task activity. The key lives in the gitignored `Config/PurrSecrets.ini`, or in the `PURR_API_KEY` environment variable. Never commit it.
+- `scripts/fetch-api-key.sh [sandbox|prod]` writes `UserSettings/PurrSecrets.json` (`environment`, `baseUrl`, `apiKey`). It's per-user and gitignored, so never commit it. The default is sandbox.
+- Auth: the `x-api-key` header carries a key issued to the **`purr3d`** actor. Changes made by the game show up as `purr3d` in task activity.
 - The full route list is in the Purr repo: `~/repos/nakomis/purr/docs/api.md`. The routes Purr3D uses:
   - `GET /projects`: doors
-  - `GET /projects/{prefix}/tasks?all=true` (paginated by `cursor`): room contents
-  - `POST /tasks/{ref}/state` with body `{"state": "<id or name>"}`: shooting
-- State cycling: the next state by `order`, stopping at the first state in the `completed` group. Shooting never moves a task into `cancelled`. This logic is pure and unit-tested in `PurrStateCycle`.
+  - `GET /projects/{prefix}/tasks?all=true&limit=100` (paginated by `cursor`): room contents
+  - `POST /tasks/{ref}/state` with body `{"state": "<id>"}`: shooting
+- **State cycling (`StateCycle.Next`):** leaving any backlog state goes to the first non-backlog state. Otherwise the task steps by (group, order). Nothing ever moves into `cancelled`, and completed or cancelled tasks stay put. Real projects need these rules: `Triage` is a backlog state sorted after Done, and BCON lists `Published` (completed) first. The API's states array is not in `order`.
 
 ## Git
 
 - `.githooks/` holds the Git LFS hooks plus the drawio→SVG/TOC pre-commit hook. After cloning, run `git config core.hooksPath .githooks`.
-- `*.uasset`, `*.umap`, `Content/**` binaries and `ArtSource/**` are stored in Git LFS. Keep Starter Content out, because GitHub's LFS quota is small.
+- Unity YAML (scenes, prefabs, assets, `.meta`) is stored as text, so Asset Serialization must stay on **Force Text**. Binary assets under `Assets/` and everything in `ArtSource/` go to LFS. Always commit `.meta` files with their assets.
 - Feature branches and PRs as usual. Branch and PR names carry the Plane ref (`PURR3D-n`).
 
 ## Testing
 
-- C++ unit tests are Automation Specs in `Source/Purr3D/Tests/`. Run them headless:
-
-  ```bash
-  "$UE_ROOT/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
-    "$PWD/Purr3D.uproject" -ExecCmds="Automation RunTests Purr3D; Quit" \
-    -unattended -nullrhi -nosplash -log
-  ```
-
-- There's no CI: GitHub-hosted runners can't usefully build Unreal, and nothing is deployed.
+- `dotnet test tests/Purr3D.Core.Tests` runs the Core NUnit tests. The .NET 8 SDK comes from asdf: `asdf set dotnet 8.0.424` in this repo. CI runs the same command on every PR.
+- Editor-side behaviour gets checked in Play mode. There's no Unity in CI.
 
 ## Architecture diagrams
 
