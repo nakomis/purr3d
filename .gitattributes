@@ -1,0 +1,19 @@
+# Unreal assets and art sources are binary: keep them in Git LFS.
+# Images under docs/ stay as plain git objects so the README renders anywhere.
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+
+Content/**/*.png filter=lfs diff=lfs merge=lfs -text
+Content/**/*.tga filter=lfs diff=lfs merge=lfs -text
+Content/**/*.exr filter=lfs diff=lfs merge=lfs -text
+Content/**/*.wav filter=lfs diff=lfs merge=lfs -text
+
+ArtSource/** filter=lfs diff=lfs merge=lfs -text
+ArtSource/**/.gitkeep !filter !diff !merge text
+
+# Text that should stay text
+*.ini text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.cs text eol=lf
+*.uproject text eol=lf

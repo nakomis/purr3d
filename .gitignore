@@ -74,3 +74,20 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# --- Purr3D additions ---
+
+# Planning
+PLAN.md
+
+# Secrets: the Purr API key never leaves the laptop
+Config/PurrSecrets.ini
+
+# Editor and IDE droppings
+.idea/
+.vscode/
+.DS_Store
+*.code-workspace
+
+# Captured API responses used while developing (test fixtures live in Source/)
+scratch/
