@@ -1,6 +1,6 @@
 # Purr3D
 
-A first-person Unity 6 walk through Purr's live data: projects are doors, and tasks are objects you can jump on and shoot. Shooting a task moves it to the next state.
+A third-person Unity 6 walk through Purr's live data: one long corridor of project doors (most recently active first), and rooms where tasks are objects you can jump on and shoot. Shooting a task moves it to the next state.
 
 ## History
 
@@ -13,8 +13,8 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 ## Stack
 
 - **Unity 6.6 (`6000.6.10f1`)** with the Universal Render Pipeline, on macOS (Intel). Unity marks Intel as deprecated from 6.6, but it's still supported.
-- **`Assets/Purr3D/Core/`** is engine-free C# (`Purr3D.Core.asmdef`, `noEngineReferences: true`): Purr's types, JSON parsing with Newtonsoft, `StateCycle`, and `PurrClient`, which talks HTTP only through the `IPurrTransport` port. Keep `UnityEngine` out of it, so `dotnet test` can exercise it without Unity.
-- **`Assets/Purr3D/Runtime/`** is the Unity side: `UnityWebRequestTransport`, settings loading, and the `PurrService` MonoBehaviour that scenes use.
+- **`Assets/Purr3D/Core/`** is engine-free C# (`Purr3D.Core.asmdef`, `noEngineReferences: true`): Purr's types, JSON parsing with Newtonsoft, `StateCycle`, `PurrClient`, which talks HTTP only through the `IPurrTransport` port, and the corridor logic (`CorridorLoader`, `CorridorOrder`, `ProjectHue`). Keep `UnityEngine` out of it, so `dotnet test` can exercise it without Unity.
+- **`Assets/Purr3D/Runtime/`** is the Unity side: `UnityWebRequestTransport`, settings loading, the `PurrService` MonoBehaviour that scenes use (it loads and caches every project's tasks at startup), and the `CorridorBuilder` / `ProjectDoor` components.
 - **C# 9 only** in `Core` and `Runtime`, because that's Unity's ceiling. No file-scoped namespaces, `required`, raw string literals or `init`-only setters in Core. The test project pins `LangVersion` 9 to enforce it.
 - Newtonsoft comes from `com.unity.nuget.newtonsoft-json` in Unity, and from NuGet `Newtonsoft.Json` in the test project.
 - Art comes from the ArtCraft suite (see README). Working files go in `ArtSource/<App>/`, which is stored in LFS.
@@ -25,20 +25,24 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 - Auth: the `x-api-key` header carries a key issued to the **`purr3d`** actor. Changes made by the game show up as `purr3d` in task activity.
 - The full route list is in the Purr repo: `~/repos/nakomis/purr/docs/api.md`. The routes Purr3D uses:
   - `GET /projects`: doors
-  - `GET /projects/{prefix}/tasks?all=true&limit=100` (paginated by `cursor`): room contents
+  - `GET /projects/{prefix}/tasks?all=true&limit=100` (paginated by `cursor`): room contents, fetched for every project at startup, six at a time
   - `POST /tasks/{ref}/state` with body `{"state": "<id>"}`: shooting
 - **State cycling (`StateCycle.Next`):** leaving any backlog state goes to the first non-backlog state. Otherwise the task steps by (group, order). Nothing ever moves into `cancelled`, and completed or cancelled tasks stay put. Real projects need these rules: `Triage` is a backlog state sorted after Done, and BCON lists `Published` (completed) first. The API's states array is not in `order`.
+
+- **Corridor order:** the newest task `updatedAt` per project, not the project's own `updatedAt` (most projects still carry the 14 Sep 2026 migration date). If startup gets slow, the fallback is adding `lastActivityAt` to Purr's `GET /projects`.
+- Newtonsoft's `JObject.Parse` turns ISO date strings into `Date` tokens. Read dates with `PurrJson`'s `Date` helper, not as strings.
 
 ## Git
 
 - `.githooks/` holds the Git LFS hooks plus the drawio→SVG/TOC pre-commit hook. After cloning, run `git config core.hooksPath .githooks`.
 - Unity YAML (scenes, prefabs, assets, `.meta`) is stored as text, so Asset Serialization must stay on **Force Text**. Binary assets under `Assets/` and everything in `ArtSource/` go to LFS. Always commit `.meta` files with their assets.
-- Feature branches and PRs as usual. Branch and PR names carry the Plane ref (`PURR3D-n`).
+- Feature branches and PRs as usual. Branch and PR names carry the Purr task ref (`PURR3D-n`).
 
 ## Testing
 
 - `dotnet test tests/Purr3D.Core.Tests/Purr3D.Core.Tests.csproj` runs the Core NUnit tests. `global.json` pins the .NET 8 SDK, because newer SDKs change `dotnet test` behaviour. The .NET 8 SDK comes from asdf: `asdf set dotnet 8.0.424` in this repo. CI runs the same command on every PR.
 - `Runtime` can be compile-checked without opening the editor. Build a throwaway `netstandard2.1` / C# 9 project that includes `Assets/Purr3D/**/*.cs` and references `UnityEngine.CoreModule.dll` and `UnityEngine.UnityWebRequestModule.dll` from `/Applications/Unity/Hub/Editor/6000.6.10f1/PlaybackEngines/MacStandaloneSupport/Variations/mono/Managed/`.
+- The Runtime compile check also needs `UnityEngine.PhysicsModule.dll` and `UnityEngine.TextRenderingModule.dll` from the same folder, plus `Unity.TextMeshPro.dll` and `UnityEngine.UI.dll` from the main checkout's `Library/ScriptAssemblies/`. Add `<NoWarn>0649</NoWarn>`, because Unity fills `[SerializeField]` fields that C# thinks are never assigned.
 - Editor-side behaviour gets checked in Play mode. There's no Unity in CI.
 
 ## Architecture diagrams

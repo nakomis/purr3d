@@ -2,7 +2,9 @@
     "name": "Purr3D.Runtime",
     "rootNamespace": "Purr3D",
     "references": [
-        "Purr3D.Core"
+        "Purr3D.Core",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
