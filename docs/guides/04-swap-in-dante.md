@@ -10,6 +10,7 @@ How he was made: fal.ai produced the head reference and an image-to-3D GLB; `scr
 2. Click `Dante.fbx`. In the Inspector's **Rig** tab, **Animation Type** should already say **Humanoid**, because the import script set it.
 3. Click **Configure…** (save the scene if asked). The body diagram should be all green. A red bone means Mixamo's skeleton didn't map: tell me which one. Click **Done** to leave.
 4. Expand `Dante.fbx` in the Project window. You should see the `Dante` mesh, the `Armature`, a `DanteAvatar` and a material.
+5. **Unpack his textures.** They're embedded in the FBX, and until they're extracted he previews grey. Open the **Materials** tab, click **Extract Textures…** and pick the `Assets/Purr3D/Characters/Dante` folder. If Unity offers to fix a normal map, click **Fix Now**. The Inspector's preview at the bottom should then show him in colour.
 
 ## 2. Put him inside the player
 
@@ -33,7 +34,7 @@ Walk him down the corridor: idle, walk, sprint (Shift or L3) and jump should all
 | He stands in a T-pose and slides about | The Animator's **Avatar** is still the robot's (step 2.5), or the Dante child still has its own Animator (step 2.3). |
 | He's half sunk into the floor, or floating | His Transform under `PlayerArmature` isn't (0, 0, 0). |
 | Arms twist oddly when he runs | Open the avatar's **Configure…** and use **Pose → Enforce T-Pose**, then **Apply**. |
-| He's white or untextured | Select his material (expand `Dante.fbx`). If **Base Map** is empty, drag in `ArtSource/Character/Dante/textures/dante_texture_diffuse.png` (copy it into `Assets/Purr3D/Characters/Dante/` first). |
+| He's grey or untextured | The textures weren't extracted (step 1.5). If his material's **Base Map** is still empty afterwards, drag the extracted `texture_diffuse` into it. |
 | Long hair stretches when he turns his head | Expected: the hair is part of the head and neck skin. It's for the art pass. |
 
 When he walks, commit the scene and the new `.meta` files, or tell me and I'll do it.
