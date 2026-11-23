@@ -1,6 +1,7 @@
 // Purr's domain, as plain C#. Mirrors packages/domain/src/types.ts in nakomis/purr.
 // Engine-free and C# 9: compiled by Unity and by tests/Purr3D.Core.Tests alike.
 
+using System;
 using System.Collections.Generic;
 
 namespace Purr3D.Core
@@ -69,6 +70,9 @@ namespace Purr3D.Core
 
         /// <summary>Optimistic-concurrency version; bumps on every change.</summary>
         public int Version;
+
+        /// <summary>When the task last changed, in UTC. Null if the API didn't say.</summary>
+        public DateTimeOffset? UpdatedAt;
 
         public override string ToString() => $"{Ref}: {Title}";
     }

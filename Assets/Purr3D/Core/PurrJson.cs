@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -130,6 +131,7 @@ namespace Purr3D.Core
                 Priority = String(json, "priority") ?? "none",
                 Points = Int(json, "points"),
                 Version = Int(json, "version") ?? 0,
+                UpdatedAt = Date(json, "updatedAt"),
             };
             if (json["labels"] is JArray labels)
             {
@@ -182,6 +184,38 @@ namespace Purr3D.Core
         {
             var token = json[field];
             return token != null && token.Type == JTokenType.String ? (string)token : null;
+        }
+
+        /// <summary>
+        /// The field as a UTC instant, or null when absent or unparseable. JObject.Parse turns ISO strings into Date
+        /// tokens by default, so both token types are accepted.
+        /// </summary>
+        private static DateTimeOffset? Date(JObject json, string field)
+        {
+            var token = json[field];
+            if (token == null) return null;
+            switch (token.Type)
+            {
+                case JTokenType.Date:
+                    var value = ((JValue)token).Value;
+                    if (value is DateTimeOffset offset) return offset.ToUniversalTime();
+                    if (value is DateTime dateTime)
+                    {
+                        // Newtonsoft marks "...Z" strings as Utc. Anything Unspecified is treated as UTC too.
+                        var utc = dateTime.Kind == DateTimeKind.Unspecified
+                            ? DateTime.SpecifyKind(dateTime, DateTimeKind.Utc)
+                            : dateTime.ToUniversalTime();
+                        return new DateTimeOffset(utc);
+                    }
+                    return null;
+                case JTokenType.String:
+                    return DateTimeOffset.TryParse((string)token, CultureInfo.InvariantCulture,
+                        DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var parsed)
+                        ? parsed
+                        : (DateTimeOffset?)null;
+                default:
+                    return null;
+            }
         }
 
         /// <summary>The field as an int, or null when absent, null or not a number.</summary>

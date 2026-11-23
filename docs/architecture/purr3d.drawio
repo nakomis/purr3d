@@ -16,11 +16,11 @@
         <mxCell id="ue" value="Unity 6 (URP) · Purr3D" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
           <mxGeometry x="150" y="50" width="560" height="300" as="geometry"/>
         </mxCell>
-        <mxCell id="bp" value="&lt;b&gt;Scenes &amp;amp; MonoBehaviours&lt;/b&gt;&lt;br&gt;corridor builder · room builder&lt;br&gt;task prefab · projectile · HUD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="bp" value="&lt;b&gt;Scenes &amp;amp; MonoBehaviours&lt;/b&gt;&lt;br&gt;CorridorBuilder · ProjectDoor&lt;br&gt;room builder · task prefab · projectile · HUD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="170" y="90" width="190" height="100" as="geometry"/>
         </mxCell>
-        <mxCell id="sub" value="&lt;b&gt;PurrService&lt;/b&gt; → &lt;b&gt;PurrClient&lt;/b&gt;&lt;br&gt;Core: PurrJson · StateCycle&lt;br&gt;IPurrTransport ← UnityWebRequest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="490" y="100" width="200" height="80" as="geometry"/>
+        <mxCell id="sub" value="&lt;b&gt;PurrService&lt;/b&gt; (task cache) → &lt;b&gt;PurrClient&lt;/b&gt;&lt;br&gt;Core: CorridorLoader · CorridorOrder&lt;br&gt;PurrJson · StateCycle&lt;br&gt;IPurrTransport ← UnityWebRequest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="480" y="90" width="220" height="100" as="geometry"/>
         </mxCell>
         <mxCell id="ini" value="UserSettings/PurrSecrets.json&lt;br&gt;baseUrl · apiKey (gitignored)" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="480" y="250" width="210" height="60" as="geometry"/>
@@ -45,7 +45,7 @@
         <mxCell id="e-play" value="walk · jump · shoot" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="player" target="bp">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e-bp-sub" value="calls · delegates" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;startArrow=classic;" edge="1" parent="1" source="bp" target="sub">
+        <mxCell id="e-bp-sub" value="corridor · events · calls" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;startArrow=classic;" edge="1" parent="1" source="bp" target="sub">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="e-ini" value="reads" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;dashed=1;" edge="1" parent="1" source="ini" target="sub">

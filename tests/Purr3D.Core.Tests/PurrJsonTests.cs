@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Purr3D.Core;
 using static Purr3D.Core.Tests.Fixtures;
@@ -96,6 +97,30 @@ namespace Purr3D.Core.Tests
 
             Assert.That(PurrJson.TryParseError(@"{""items"": []}", out _, out _), Is.False);
             Assert.That(PurrJson.TryParseError("<html>", out _, out _), Is.False);
+        }
+
+        [Test]
+        public void ParsesUpdatedAtAsUtc()
+        {
+            var task = PurrJson.ParseTask(@"{""ref"": ""HOME-1"", ""stateId"": ""s"", ""updatedAt"": ""2026-09-14T21:18:56.691Z""}");
+            Assert.That(task.UpdatedAt, Is.EqualTo(new DateTimeOffset(2026, 9, 14, 21, 18, 56, 691, TimeSpan.Zero)));
+            Assert.That(task.UpdatedAt.Value.Offset, Is.EqualTo(TimeSpan.Zero));
+        }
+
+        [Test]
+        public void ConvertsAnOffsetUpdatedAtToUtc()
+        {
+            var task = PurrJson.ParseTask(@"{""ref"": ""HOME-1"", ""stateId"": ""s"", ""updatedAt"": ""2026-11-23T10:00:00+02:00""}");
+            Assert.That(task.UpdatedAt, Is.EqualTo(new DateTimeOffset(2026, 11, 23, 8, 0, 0, TimeSpan.Zero)));
+        }
+
+        [TestCase(@"{""ref"": ""HOME-1"", ""stateId"": ""s""}")]
+        [TestCase(@"{""ref"": ""HOME-1"", ""stateId"": ""s"", ""updatedAt"": null}")]
+        [TestCase(@"{""ref"": ""HOME-1"", ""stateId"": ""s"", ""updatedAt"": ""last Tuesday""}")]
+        [TestCase(@"{""ref"": ""HOME-1"", ""stateId"": ""s"", ""updatedAt"": 42}")]
+        public void LeavesAMissingOrJunkUpdatedAtNull(string body)
+        {
+            Assert.That(PurrJson.ParseTask(body).UpdatedAt, Is.Null);
         }
     }
 }

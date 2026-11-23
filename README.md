@@ -1,4 +1,4 @@
-# Purr3D — A first-person Unity walk through Purr
+# Purr3D — A third-person Unity walk through Purr
 
 <img src="docs/logo.png" alt="Purr3D logo: Mu, Tau, Chi and Kappa as 3D cat heads" width="200" align="right"/>
 
@@ -26,7 +26,7 @@ If you find this useful, please consider buying me a coffee:
 
 [Purr](https://github.com/nakomis/purr) is a serverless task tracker: projects, tasks, cross-project epics and a priorities board. Purr3D is the same data turned into a place you can walk around:
 
-- **The corridor**: one door per project, labelled with its live name and prefix.
+- **The corridor**: one long corridor with a door per project, labelled with its live name and prefix. The most recently active project is nearest the start.
 - **The rooms**: each project's board laid out on the floor. There is one zone per state, and each task is a physical object sitting in its state's zone.
 - **Jump on a task** to read its ref, title, state and points.
 - **Shoot a task** to move it to the next state. It flies across the room to its new zone. If the Purr API refuses the change, the task snaps back.
@@ -42,8 +42,8 @@ It's a fun side project built in Unity 6, with an art pipeline based on the [Art
 | Path | What lives there |
 |---|---|
 | `Assets/`, `Packages/`, `ProjectSettings/` | The Unity 6 project (URP) |
-| `Assets/Purr3D/Core/` | Engine-free C#: Purr's types, JSON parsing, the state-cycling rule and the API client, behind an `IPurrTransport` port |
-| `Assets/Purr3D/Runtime/` | The Unity side: a `UnityWebRequest` transport, settings, and the `PurrService` MonoBehaviour that scenes talk to |
+| `Assets/Purr3D/Core/` | Engine-free C#: Purr's types, JSON parsing, the state-cycling rule, the corridor's loading and ordering, and the API client, behind an `IPurrTransport` port |
+| `Assets/Purr3D/Runtime/` | The Unity side: a `UnityWebRequest` transport, settings, the `PurrService` MonoBehaviour that scenes talk to, and the `CorridorBuilder` that lays out the doors |
 | `tests/Purr3D.Core.Tests/` | NUnit tests for `Core`, run with plain `dotnet test`, so no Unity is needed (CI runs them too) |
 | `ArtSource/` | Working files from the ArtCraft apps (MaterialCraft, TextureCraft, SolidCraft, VectorCraft, PhotoCraft, SoundCraft, FilmCraft), stored in Git LFS |
 | `docs/guides/` | Step-by-step guides for the editor-side work |
@@ -79,7 +79,7 @@ It's a fun side project built in Unity 6, with an art pipeline based on the [Art
 
 | App | Job |
 |---|---|
-| MaterialCraft | Tileable PBR surfaces for the corridor, doors and room floors. Each project gets its own colour through a Material Instance parameter. |
+| MaterialCraft | Tileable PBR surfaces for the corridor, doors and room floors. Each project's door gets its own colour, hashed from its prefix and applied with a `MaterialPropertyBlock`, so one material serves every door. |
 | SolidCraft | Door frames, the task object and the blaster |
 | TextureCraft | Paints those props with MaterialCraft materials and exports GLB for Unity |
 | VectorCraft | Crosshair, HUD and door-sign graphics |
