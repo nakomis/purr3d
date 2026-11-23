@@ -64,6 +64,10 @@ namespace Purr3D
 
         private void Start()
         {
+            // Floor first: the player spawns before the corridor has loaded and would otherwise fall into the void.
+            // Sized for the preview count; Build() replaces it with the real length.
+            if (buildShell) BuildShell(LengthFor(previewDoorCount));
+
             _service = PurrService.Instance;
             if (_service == null)
             {
