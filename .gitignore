@@ -167,3 +167,6 @@ scratch/
 
 # Local printouts of the guides
 docs/guides/*.pdf
+
+# Claude Code worktrees
+.claude/worktrees/

@@ -41,7 +41,7 @@ Art comes later (PURR3D-8). For now, cubes. The prefab's **pivot is at the botto
    | `Prefix` | **3D Object → Text - TextMeshPro** | (0, 2.38, 0.11) | (0, **180**, 0) | (1, 1, 1) |
    | `Name` | **3D Object → Text - TextMeshPro** | (0, 1.5, 0.15) | (0, **180**, 0) | (1, 1, 1) |
 
-   **The 180° matters.** TMP text is readable from its −Z side, so without the turn it would face into the wall.
+   **The 180° matters.** TMP text reads correctly when viewed along +Z, from its −Z side. The door's face points +Z towards the viewer, so without the turn the labels would read backwards, facing into the wall.
 
 3. On `Prefix`'s TextMeshPro component: text `HOME`, Font Size **2**, Alignment **centre / middle**, and Rect Transform width **1.4**, height **0.4**. Set its vertex colour to dark grey, so it shows against the frame.
 4. On `Name`'s TextMeshPro component: text `Home infrastructure`, Font Size **1.2**, Alignment **centre / middle**, Wrapping **on**, and Rect Transform width **1.0**, height **1.2**. Make it white.
@@ -55,7 +55,7 @@ Art comes later (PURR3D-8). For now, cubes. The prefab's **pivot is at the botto
 
 1. **GameObject → Create Empty**, name it `Corridor`, position (0, 0, 0), rotation (0, 0, 0). The corridor runs from here along +Z.
 2. **Add Component → Corridor Builder**, and drag the `ProjectDoor` prefab into **Door Prefab**.
-3. A loading sign: right-click `Corridor` → **3D Object → Text - TextMeshPro**, and name it `LoadingLabel`. Set position (0, 2, 4), rotation (0, **180**, 0), Font Size 1.5, centre aligned, width 4, height 1. Then drag it into the builder's **Loading Label**.
+3. A loading sign: right-click `Corridor` → **3D Object → Text - TextMeshPro**, and name it `LoadingLabel`. Set position (0, 2, 4), rotation (0, **0**, 0), Font Size 1.5, centre aligned, width 4, height 1. Then drag it into the builder's **Loading Label**. Unlike the door labels it needs no turn, because the player looks at it along +Z, which is the way TMP text reads.
 4. With `Corridor` selected, the Scene view shows a gizmo preview: a wireframe of the corridor and 45 coloured door markers. Use it to judge spacing before you press Play. All the defaults (spacing 4 m, width 5 m, height 4 m, first door 6 m in) are on the component.
 
 Leave **Build Shell** on. It generates a floor, walls and end caps sized to however many doors there are. **Build Ceiling** is off by default, because a lid blocks the sun and crowds the third-person camera.
@@ -83,7 +83,7 @@ Then save the scene, and commit the scene, the prefab, `Assets/TextMesh Pro/` an
 | "CorridorBuilder has no door prefab" | Step 4.2: drag the prefab, not the scene object, into **Door Prefab**. |
 | "No PurrService in the scene" | The Corridor scene needs its own `Purr` object (guide 02, step 2). |
 | "Couldn't reach Purr" and a 401 | The API key is wrong or missing: run `scripts/fetch-api-key.sh`. |
-| Doors are there but the labels are invisible | Usually the 180° rotation (step 3.2), or TMP Essentials weren't imported (step 1). |
+| Doors are there but the labels are invisible or mirrored | Usually the 180° rotation on the door labels (step 3.2), or TMP Essentials weren't imported (step 1). The loading label is the opposite case: it wants 0°. |
 | Every door is grey | **Tinted** is empty, or the leaf's material ignores `_BaseColor`. The default URP Lit material honours it. |
 | A door says "(offline)" | That project's tasks failed to load. The Console has a `[Purr] PREFIX: …` warning saying why. |
 | The camera clips through walls | Raise **Width** on the builder, or add the Cinemachine Deoccluder to `PlayerFollowCamera`. |
