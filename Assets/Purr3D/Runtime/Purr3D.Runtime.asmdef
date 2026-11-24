@@ -5,7 +5,8 @@
         "Purr3D.Core",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
-        "Unity.Cinemachine"
+        "Unity.Cinemachine",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

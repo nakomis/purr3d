@@ -74,6 +74,24 @@ namespace Purr3D.Core
         /// <summary>When the task last changed, in UTC. Null if the API didn't say.</summary>
         public DateTimeOffset? UpdatedAt;
 
+        /// <summary>
+        /// A copy in another state, changed at <paramref name="at"/>: what a shot shows straight away, before Purr
+        /// answers. The original is left alone, so it can be put back if Purr says no.
+        /// </summary>
+        public PurrTask WithState(string stateId, DateTimeOffset at) => new PurrTask
+        {
+            Id = Id,
+            Ref = Ref,
+            ProjectId = ProjectId,
+            Title = Title,
+            StateId = stateId,
+            Priority = Priority,
+            Points = Points,
+            Labels = Labels == null ? new List<string>() : new List<string>(Labels),
+            Version = Version,
+            UpdatedAt = at,
+        };
+
         public override string ToString() => $"{Ref}: {Title}";
     }
 

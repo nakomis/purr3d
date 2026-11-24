@@ -98,6 +98,29 @@ namespace Purr3D
             PlaceAt(target);
         }
 
+        /// <summary>A little shudder in place: the shot landed, but the task has nowhere to go.</summary>
+        public void Wobble()
+        {
+            if (_slide != null || !isActiveAndEnabled) return;
+            _slide = StartCoroutine(Shudder());
+        }
+
+        private IEnumerator Shudder()
+        {
+            _body.isKinematic = true;
+            var home = transform.localPosition;
+            const float seconds = 0.3f;
+            for (var t = 0f; t < seconds; t += Time.deltaTime)
+            {
+                var fade = 1f - t / seconds;
+                transform.localRotation = Quaternion.Euler(0f, Mathf.Sin(t * 60f) * 8f * fade, 0f);
+                transform.localPosition = home + Vector3.up * (0.05f * Mathf.Sin(t / seconds * Mathf.PI));
+                yield return null;
+            }
+            _slide = null;
+            PlaceAt(home);
+        }
+
         private void Settle()
         {
             if (_body == null) _body = GetComponent<Rigidbody>();

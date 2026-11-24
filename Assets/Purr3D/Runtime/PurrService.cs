@@ -29,6 +29,12 @@ namespace Purr3D
         [Tooltip("Projects fetched at once during the startup load.")]
         [SerializeField, Range(1, 16)] private int maxConcurrentRequests = CorridorLoader.DefaultMaxConcurrent;
 
+        [Header("Testing")]
+        [Tooltip("Send an API key Purr won't accept, from now on: shots are refused and their crates snap back. Works live in Play mode; untick to carry on.")]
+        [SerializeField] private bool sendWrongApiKey;
+
+        private UnityWebRequestTransport _transport;
+
         public PurrSettings Settings { get; private set; }
         public PurrClient Client { get; private set; }
 
@@ -60,7 +66,8 @@ namespace Purr3D
             _lifetime = new CancellationTokenSource();
 
             Settings = PurrSettings.Load();
-            Client = new PurrClient(new UnityWebRequestTransport(Settings.BaseUrl, Settings.ApiKey));
+            _transport = new UnityWebRequestTransport(Settings.BaseUrl, Settings.ApiKey);
+            Client = new PurrClient(_transport);
 
             // Never log the key itself.
             Debug.Log($"[Purr] {Settings.Environment} at {Settings.BaseUrl}; API key {(Settings.HasApiKey ? "found" : "MISSING: run scripts/fetch-api-key.sh")}");
@@ -164,6 +171,22 @@ namespace Purr3D
                 _refreshing.Remove(prefix);
             }
         }
+
+        private void Update()
+        {
+            if (_transport != null && _transport.SpoilKey != sendWrongApiKey)
+            {
+                _transport.SpoilKey = sendWrongApiKey;
+                Debug.Log(sendWrongApiKey ? "[Purr] Testing: sending a wrong API key" : "[Purr] Back to the real API key");
+            }
+        }
+
+        /// <summary>
+        /// Moves a task to <paramref name="state"/> and returns Purr's copy of it. Throws <see cref="PurrApiException"/>
+        /// when Purr refuses or can't be reached.
+        /// </summary>
+        public Task<PurrTask> SetStateAsync(PurrTask task, PurrState state) =>
+            Client.SetStateAsync(task.Ref, state.Id, _lifetime?.Token ?? CancellationToken.None);
 
         /// <summary>Moves a task one step along (see <see cref="StateCycle"/>). Returns null when it stays put.</summary>
         public async Task<PurrTask> AdvanceAsync(PurrProject project, PurrTask task)
