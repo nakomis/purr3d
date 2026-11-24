@@ -38,6 +38,9 @@ namespace Purr3D
         public PurrSettings Settings { get; private set; }
         public PurrClient Client { get; private set; }
 
+        /// <summary>Projects' icons, downloaded on request and kept (PURR3D-13).</summary>
+        public ProjectIcons Icons { get; private set; }
+
         /// <summary>Doors in order, most recently active first. Empty until loaded.</summary>
         public IReadOnlyList<CorridorEntry> Corridor => _corridor;
 
@@ -68,6 +71,7 @@ namespace Purr3D
             Settings = PurrSettings.Load();
             _transport = new UnityWebRequestTransport(Settings.BaseUrl, Settings.ApiKey);
             Client = new PurrClient(_transport);
+            Icons = new ProjectIcons(Settings.BaseUrl, _lifetime.Token);
 
             // Never log the key itself.
             Debug.Log($"[Purr] {Settings.Environment} at {Settings.BaseUrl}; API key {(Settings.HasApiKey ? "found" : "MISSING: run scripts/fetch-api-key.sh")}");
@@ -83,6 +87,8 @@ namespace Purr3D
             if (Instance != this) return;
             Instance = null;
             _lifetime?.Cancel();
+            Icons?.Dispose();
+            Icons = null;
             _lifetime?.Dispose();
             _lifetime = null;
         }

@@ -54,7 +54,7 @@
         <mxCell id="e-content" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="content" target="bp">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
-        <mxCell id="e-https" value="HTTPS + x-api-key&lt;br&gt;GET /projects · GET …/tasks&lt;br&gt;(tasks again per room)&lt;br&gt;POST /tasks/{ref}/state" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="sub" target="cf">
+        <mxCell id="e-https" value="HTTPS + x-api-key&lt;br&gt;GET /projects · GET …/tasks&lt;br&gt;(tasks again per room)&lt;br&gt;POST /tasks/{ref}/state&lt;br&gt;GET /icons/*.png (no key)" style="verticalAlign=bottom;labelBackgroundColor=none;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=11;" edge="1" parent="1" source="sub" target="cf">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="e-cf-l" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="cf" target="lambda">

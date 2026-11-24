@@ -170,3 +170,7 @@ docs/guides/*.pdf
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# SolidCraft (and other app) backups and "file is open" locks
+*.bak
+.~*.lock

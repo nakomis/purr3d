@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Purr3D.Core;
 using TMPro;
@@ -121,6 +122,7 @@ namespace Purr3D
                 door.Bind(entry, ColourFor(entry.Project.Prefix));
                 door.Entered += OnDoorEntered;
                 _doors.Add(door);
+                LoadIcon(door);
             }
 
             if (buildShell) BuildShell(LengthFor(corridor.Count));
@@ -177,6 +179,25 @@ namespace Purr3D
             var child = new GameObject(childName).transform;
             child.SetParent(transform, false);
             return child;
+        }
+
+        /// <summary>
+        /// Swaps the door's placeholder for its project's icon when that arrives. The corridor never waits: a door
+        /// with no icon, or one that can't be fetched, keeps its lettered placeholder.
+        /// </summary>
+        private async void LoadIcon(ProjectDoor door)
+        {
+            var icons = PurrService.Instance != null ? PurrService.Instance.Icons : null;
+            if (icons == null || door.Entry == null) return;
+            try
+            {
+                var icon = await icons.GetAsync(door.Entry.Project);
+                if (icon != null && door != null) door.ShowIcon(icon); // the door may have gone (a rebuild)
+            }
+            catch (OperationCanceledException)
+            {
+                // Play mode stopped mid-download.
+            }
         }
 
         private void OnDoorEntered(ProjectDoor door)
