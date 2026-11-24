@@ -65,8 +65,8 @@ jq -r '"x-api-key: \(.apiKey)"' UserSettings/PurrSecrets.json \
 The newest entry should have `"actor": "purr3d"`.
 
 **A refusal snaps back.**
-1. While still in Play mode, select **PurrService** in the Hierarchy. It's under *DontDestroyOnLoad* during Play.
-2. Tick **Send Wrong Api Key** under *Testing*. The Console says `Testing: sending a wrong API key`.
+1. While still in Play mode, expand **DontDestroyOnLoad** at the bottom of the Hierarchy, and select **Purr**. That's the GameObject carrying the Purr Service component; it moves there when Play starts, so it survives scene loads.
+2. In its **Purr Service** component, tick **Send Wrong Api Key** under *Testing*. The Console says `Testing: sending a wrong API key`.
 3. Shoot a crate. It hops, then flies back, you hear the buzz, and the top of the screen says *"the API key wasn't accepted"*.
 4. Untick the box, and shooting works again.
 
