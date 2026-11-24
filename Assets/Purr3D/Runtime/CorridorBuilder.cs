@@ -18,6 +18,9 @@ namespace Purr3D
         [Header("Doors")]
         [SerializeField] private ProjectDoor doorPrefab;
 
+        [Tooltip("Takes the player through a door into its room. Found on this object if left empty.")]
+        [SerializeField] private RoomTravel roomTravel;
+
         [Tooltip("Distance between doors on the same side, in metres. Doors alternate sides, so neighbours are half this apart.")]
         [SerializeField, Min(1f)] private float spacing = 4f;
 
@@ -68,6 +71,8 @@ namespace Purr3D
             // Sized for the preview count; Build() replaces it with the real length.
             if (buildShell) BuildShell(LengthFor(previewDoorCount));
 
+            if (roomTravel == null) roomTravel = GetComponent<RoomTravel>();
+
             _service = PurrService.Instance;
             if (_service == null)
             {
@@ -114,6 +119,7 @@ namespace Purr3D
                 door.transform.localPosition = position;
                 door.transform.localRotation = rotation;
                 door.Bind(entry, ColourFor(entry.Project.Prefix));
+                door.Entered += OnDoorEntered;
                 _doors.Add(door);
             }
 
@@ -171,6 +177,12 @@ namespace Purr3D
             var child = new GameObject(childName).transform;
             child.SetParent(transform, false);
             return child;
+        }
+
+        private void OnDoorEntered(ProjectDoor door)
+        {
+            if (roomTravel != null) roomTravel.Enter(door);
+            else Debug.LogWarning("[Purr] CorridorBuilder: add a RoomTravel to open the rooms.");
         }
 
         private void OnProgress(LoadProgress progress) =>
