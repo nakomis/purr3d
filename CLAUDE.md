@@ -25,7 +25,9 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 
 ## The Purr API
 
-- `scripts/fetch-api-key.sh [sandbox|prod]` writes `UserSettings/PurrSecrets.json` (`environment`, `baseUrl`, `apiKey`). It's per-user and gitignored, so never commit it. The default is sandbox.
+- `scripts/fetch-api-key.sh [--player] [sandbox|prod]` writes `UserSettings/PurrSecrets.json` (`environment`, `baseUrl`, `apiKey`; format in Core's `PurrSecretsFile`). It's per-user and gitignored, so never commit it. The default is sandbox. `--player` also writes the built app's copy, `~/Library/Application Support/Nakomis/Purr3D/PurrSecrets.json`.
+- **No key, or a refused one (PURR3D-14):** the game shows its code-built **Connect to Purr** screen (`ApiKeyScreen`, made by `PurrService`). The screen checks the key with `GET /me`, then saves it via `PurrSettings.Save` (`chmod 600`). F10 reopens it in the corridor. `PurrService.UseKey` reconfigures the client and reloads the corridor.
+- **Builds:** code-built things use `Purr3DMaterials` (`Resources/Purr3D/Shell.mat`, `Unlit.mat`), never `Shader.Find` or a primitive's default material, because both turn magenta in a player build. Signing: `scripts/sign-and-notarise.sh` with `macos/Purr3D.entitlements` (Mono needs allow-jit, unsigned executable memory, and disable library validation). Guide 10.
 - Auth: the `x-api-key` header carries a key issued to the **`purr3d`** actor. Changes made by the game show up as `purr3d` in task activity.
 - The full route list is in the Purr repo: `~/repos/nakomis/purr/docs/api.md`. The routes Purr3D uses:
   - `GET /projects`: doors

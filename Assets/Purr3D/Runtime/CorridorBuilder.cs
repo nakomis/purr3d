@@ -162,7 +162,7 @@ namespace Purr3D
             block.transform.SetParent(_shellRoot, false);
             block.transform.localPosition = centre;
             block.transform.localScale = size;
-            if (shellMaterial != null) block.GetComponent<Renderer>().sharedMaterial = shellMaterial;
+            block.GetComponent<Renderer>().sharedMaterial = shellMaterial != null ? shellMaterial : Purr3DMaterials.Shell;
         }
 
         private void Clear()

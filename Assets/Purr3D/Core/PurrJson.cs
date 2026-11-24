@@ -61,6 +61,13 @@ namespace Purr3D.Core
             return ParseTask(ReadObject(body)) ?? throw new PurrFormatException("task has no ref or stateId");
         }
 
+        /// <summary><c>GET /me</c>'s <c>{"actor": "purr3d"}</c>.</summary>
+        public static string ParseActor(string body)
+        {
+            var actor = String(ReadObject(body), "actor");
+            return string.IsNullOrWhiteSpace(actor) ? throw new PurrFormatException("no actor") : actor;
+        }
+
         /// <summary><c>{"error":{"code","message"}}</c>. False when the body isn't a Purr error.</summary>
         public static bool TryParseError(string body, out string code, out string message)
         {

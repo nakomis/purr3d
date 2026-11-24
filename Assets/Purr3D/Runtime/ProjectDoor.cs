@@ -61,7 +61,6 @@ namespace Purr3D
 
         private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
         private static readonly int MainTexId = Shader.PropertyToID("_MainTex");
-        private static Material _iconMaterial;
 
         private void Awake()
         {
@@ -108,14 +107,8 @@ namespace Purr3D
             tile.transform.localScale = new Vector3(iconSize, iconSize, 1f);
 
             var renderer = tile.GetComponent<Renderer>();
-            if (_iconMaterial == null)
-            {
-                // Shader.Find works in the editor; a player build needs the shader kept (Graphics settings) or a
-                // material assigned through Icon Renderer instead.
-                var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Texture");
-                if (shader != null) _iconMaterial = new Material(shader) { name = "Door icon (made in code)" };
-            }
-            if (_iconMaterial != null) renderer.sharedMaterial = _iconMaterial;
+            // A real material asset, not Shader.Find, so it survives a build (see Purr3DMaterials).
+            renderer.sharedMaterial = Purr3DMaterials.Unlit;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             return renderer;
         }

@@ -216,7 +216,7 @@ namespace Purr3D
             if (!collide) Destroy(block.GetComponent<Collider>());
 
             var renderer = block.GetComponent<Renderer>();
-            if (material != null) renderer.sharedMaterial = material;
+            renderer.sharedMaterial = material != null ? material : Purr3DMaterials.Shell;
             if (colour.HasValue)
             {
                 var props = new MaterialPropertyBlock();

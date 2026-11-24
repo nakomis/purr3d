@@ -35,8 +35,18 @@ namespace Purr3D
 
         private UnityWebRequestTransport _transport;
 
-        public PurrSettings Settings { get; private set; }
+        /// <summary>Where Purr is and the key in use (see <see cref="PurrSettings"/>). Never log <c>ApiKey</c>.</summary>
+        public PurrSecretsFile Settings { get; private set; }
         public PurrClient Client { get; private set; }
+
+        /// <summary>
+        /// Why a key is needed before the corridor can load: none was found, or Purr refused the one in use. Null
+        /// when all's well. <see cref="ApiKeyScreen"/> shows itself while this is set (PURR3D-14).
+        /// </summary>
+        public string KeyProblem { get; private set; }
+
+        /// <summary>Raised with <see cref="KeyProblem"/> when a key is needed.</summary>
+        public event Action<string> KeyNeeded;
 
         /// <summary>Projects' icons, downloaded on request and kept (PURR3D-13).</summary>
         public ProjectIcons Icons { get; private set; }
@@ -68,18 +78,66 @@ namespace Purr3D
             DontDestroyOnLoad(gameObject);
             _lifetime = new CancellationTokenSource();
 
-            Settings = PurrSettings.Load();
-            _transport = new UnityWebRequestTransport(Settings.BaseUrl, Settings.ApiKey);
-            Client = new PurrClient(_transport);
-            Icons = new ProjectIcons(Settings.BaseUrl, _lifetime.Token);
+            Configure(PurrSettings.Load());
+            ApiKeyScreen.Create(transform, this); // shows itself when a key is needed (PURR3D-14)
 
             // Never log the key itself.
-            Debug.Log($"[Purr] {Settings.Environment} at {Settings.BaseUrl}; API key {(Settings.HasApiKey ? "found" : "MISSING: run scripts/fetch-api-key.sh")}");
+            Debug.Log($"[Purr] {Settings.Environment} at {Settings.BaseUrl}; API key " +
+                      (Settings.HasApiKey ? "found" : $"MISSING: enter one in the game, or run scripts/fetch-api-key.sh ({PurrSettings.SecretsPath})"));
         }
 
         private void Start()
         {
-            if (loadCorridorOnStart) _ = LoadCorridorAsync();
+            if (!Settings.HasApiKey) NeedKey("Purr3D needs an API key to reach Purr.");
+            else if (loadCorridorOnStart) _ = LoadCorridorAsync();
+        }
+
+        /// <summary>Points the client, transport and icons at <paramref name="settings"/>.</summary>
+        private void Configure(PurrSecretsFile settings)
+        {
+            Settings = settings;
+            _transport = new UnityWebRequestTransport(settings.BaseUrl, settings.ApiKey) { SpoilKey = sendWrongApiKey };
+            Client = new PurrClient(_transport);
+            Icons?.Dispose();
+            Icons = new ProjectIcons(settings.BaseUrl, _lifetime.Token);
+        }
+
+        private void NeedKey(string reason)
+        {
+            KeyProblem = reason;
+            KeyNeeded?.Invoke(reason);
+        }
+
+        /// <summary>
+        /// Asks Purr who <paramref name="candidate"/>'s key belongs to, without using or saving it: the actor (e.g.
+        /// "purr3d"). Throws <see cref="PurrApiException"/> (401 for a bad key, 0 for no connection).
+        /// </summary>
+        public Task<string> CheckKeyAsync(PurrSecretsFile candidate)
+        {
+            var client = new PurrClient(new UnityWebRequestTransport(candidate.BaseUrl, candidate.ApiKey));
+            return client.GetMeAsync(_lifetime?.Token ?? CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Switches to <paramref name="settings"/> (a key <see cref="CheckKeyAsync"/> accepted), saves it for next
+        /// time, and loads the corridor again with it.
+        /// </summary>
+        public void UseKey(PurrSecretsFile settings)
+        {
+            PurrSettings.Save(settings);
+            Configure(settings);
+            KeyProblem = null;
+            _corridor = new List<CorridorEntry>();
+            Debug.Log($"[Purr] now using {settings} (saved to {PurrSettings.SecretsPath})");
+            _ = LoadCorridorAsync();
+        }
+
+        /// <summary>Deletes the saved key file. The key in use stays in use until the game quits or another is entered.</summary>
+        public bool ForgetSavedKey()
+        {
+            var forgot = PurrSettings.Forget();
+            Debug.Log(forgot ? $"[Purr] forgot the saved key ({PurrSettings.SecretsPath})" : "[Purr] no saved key to forget");
+            return forgot;
         }
 
         private void OnDestroy()
@@ -120,6 +178,13 @@ namespace Purr3D
             catch (OperationCanceledException)
             {
                 IsLoading = false; // shutting down
+            }
+            catch (PurrApiException e) when ((e.Status == 401 || e.Status == 403) && !sendWrongApiKey)
+            {
+                // The key itself is the problem: ask for another rather than showing a dead corridor.
+                IsLoading = false;
+                Debug.LogWarning($"[Purr] {e.Message}");
+                NeedKey("Purr didn't accept the saved key. Enter a new one.");
             }
             catch (Exception e)
             {
