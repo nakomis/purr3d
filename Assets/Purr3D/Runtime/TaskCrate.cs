@@ -31,11 +31,21 @@ namespace Purr3D
 
         public PurrTask Task { get; private set; }
 
+        public PurrProject Project { get; private set; }
+
+        /// <summary>The door's colour, which the crate wears.</summary>
+        public Color Colour { get; private set; }
+
+        /// <summary>What the HUD shows for this crate, worked out afresh so it's current after a refresh.</summary>
+        public TaskCard Card => Project != null && Task != null ? TaskCard.From(Project, Task) : null;
+
         private void Awake() => _body = GetComponent<Rigidbody>();
 
-        public void Bind(PurrTask task, Color colour)
+        public void Bind(PurrProject project, PurrTask task, Color colour)
         {
+            Project = project;
             Task = task;
+            Colour = colour;
             name = $"Crate {task.Ref}";
             foreach (var label in refLabels)
             {
