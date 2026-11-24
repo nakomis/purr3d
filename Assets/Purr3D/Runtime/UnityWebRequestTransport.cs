@@ -23,6 +23,12 @@ namespace Purr3D
             _timeoutSeconds = timeoutSeconds;
         }
 
+        /// <summary>
+        /// Testing only: send a key Purr won't accept, to see how the game copes with being refused (PURR3D-7's
+        /// snap-back). <see cref="PurrService"/> sets it from its Inspector checkbox.
+        /// </summary>
+        public bool SpoilKey { get; set; }
+
         public Task<PurrResponse> SendAsync(string method, string path, string jsonBody, CancellationToken cancellationToken)
         {
             var request = new UnityWebRequest(_baseUrl + path, method)
@@ -36,7 +42,7 @@ namespace Purr3D
                 request.SetRequestHeader("Content-Type", "application/json");
             }
             request.SetRequestHeader("Accept", "application/json");
-            request.SetRequestHeader("x-api-key", _apiKey);
+            request.SetRequestHeader("x-api-key", SpoilKey ? _apiKey + "-spoilt" : _apiKey);
 
             // A TaskCompletionSource rather than awaiting the operation directly, so this works on any Unity version.
             var completion = new TaskCompletionSource<PurrResponse>();

@@ -37,6 +37,21 @@ namespace Purr3D.Core
             LoadFailed = false;
         }
 
+        /// <summary>
+        /// Swaps one task, matched by ref, for <paramref name="task"/> (a shot, or Purr's answer to one). Returns the
+        /// task it replaced, or null, changing nothing, when there's no task with that ref.
+        /// </summary>
+        public PurrTask ReplaceTask(PurrTask task)
+        {
+            if (task?.Ref == null) return null;
+            var index = Tasks.FindIndex(t => t != null && string.Equals(t.Ref, task.Ref, StringComparison.Ordinal));
+            if (index < 0) return null;
+            var old = Tasks[index];
+            Tasks[index] = task;
+            LatestActivity = CorridorOrder.Latest(Tasks);
+            return old;
+        }
+
         public static CorridorEntry Failed(PurrProject project) =>
             new CorridorEntry { Project = project, LoadFailed = true };
 

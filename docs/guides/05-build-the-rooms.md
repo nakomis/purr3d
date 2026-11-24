@@ -77,6 +77,6 @@ Then the real test, the task's **done when**:
    Do it in Play mode, after the corridor has loaded: the game fetches every project at startup, so a change made before pressing Play would already be in the cache and the room would report `no changes`.
 3. Walk out through the exit behind you (it's door-coloured), then back in. The crate should hop across into its new zone, and the Console shows `1 moved`.
 
-HOME's Done zone stacks its crates six high rather than running 30 m into the distance. They're real physics objects, so Dante can kick them over. They're all tidied away again next time you come in.
+HOME's Done zone stacks its crates six high rather than running 30 m into the distance. The crates are kinematic: solid to stand on, but physics never moves them, only the game's code does. (They started out fully simulated, but the player's CharacterController pushes like an infinitely heavy object, and crates it bumped flew off into the sky. That was fixed in PURR3D-7.)
 
 When it all works, commit `Room.unity`, the `TaskCrate` prefab and the `.meta` files, or tell me and I'll do it.

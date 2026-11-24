@@ -16,7 +16,7 @@
         <mxCell id="ue" value="Unity 6 (URP) · Purr3D" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;arcSize=4;" vertex="1" parent="1">
           <mxGeometry x="150" y="50" width="560" height="300" as="geometry"/>
         </mxCell>
-        <mxCell id="bp" value="&lt;b&gt;Scenes &amp;amp; MonoBehaviours&lt;/b&gt;&lt;br&gt;CorridorBuilder · ProjectDoor&lt;br&gt;RoomTravel → Room scene:&lt;br&gt;RoomBuilder · TaskCrateRoomBuilder · TaskCrate&lt;br&gt;projectile · HUD (to come)lt;brRoomBuilder · TaskCrate&lt;br&gt;projectile · HUD (to come)gt;TaskStandReader → TaskHudRoomBuilder · TaskCrate&lt;br&gt;projectile · HUD (to come)lt;brRoomBuilder · TaskCrate&lt;br&gt;projectile · HUD (to come)gt;projectile (to come)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="bp" value="&lt;b&gt;Scenes &amp;amp; MonoBehaviours&lt;/b&gt;&lt;br&gt;CorridorBuilder · ProjectDoor&lt;br&gt;RoomTravel → Room scene:&lt;br&gt;RoomBuilder · TaskCrate&lt;br&gt;TaskStandReader → TaskHud&lt;br&gt;TaskShooter → ShotBolt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="170" y="90" width="190" height="120" as="geometry"/>
         </mxCell>
         <mxCell id="sub" value="&lt;b&gt;PurrService&lt;/b&gt; (task cache) → &lt;b&gt;PurrClient&lt;/b&gt;&lt;br&gt;Core: CorridorLoader · CorridorOrder&lt;br&gt;RoomLayout · RoomDiff&lt;br&gt;PurrJson · StateCycle&lt;br&gt;IPurrTransport ← UnityWebRequest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">

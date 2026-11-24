@@ -39,7 +39,27 @@ namespace Purr3D
         /// <summary>What the HUD shows for this crate, worked out afresh so it's current after a refresh.</summary>
         public TaskCard Card => Project != null && Task != null ? TaskCard.From(Project, Task) : null;
 
-        private void Awake() => _body = GetComponent<Rigidbody>();
+        private Collider[] _colliders;
+
+        private void Awake()
+        {
+            _body = GetComponent<Rigidbody>();
+            _colliders = GetComponentsInChildren<Collider>();
+            _body.isKinematic = true;
+        }
+
+        /// <summary>
+        /// Off while sliding, so the crate passes through its neighbours and the player on the way, and nothing
+        /// ends up wedged inside anything. Back on once it's in its slot.
+        /// </summary>
+        private void Solid(bool solid)
+        {
+            if (_colliders == null) _colliders = GetComponentsInChildren<Collider>();
+            foreach (var c in _colliders)
+            {
+                if (c != null) c.enabled = solid;
+            }
+        }
 
         public void Bind(PurrProject project, PurrTask task, Color colour)
         {
@@ -83,7 +103,7 @@ namespace Purr3D
 
         private IEnumerator Slide(Vector3 target)
         {
-            _body.isKinematic = true;
+            Solid(false);
             var from = transform.localPosition;
             var fromRotation = transform.localRotation;
             var lift = Vector3.up * 0.6f; // hop over the crates in between
@@ -98,13 +118,38 @@ namespace Purr3D
             PlaceAt(target);
         }
 
+        /// <summary>A little shudder in place: the shot landed, but the task has nowhere to go.</summary>
+        public void Wobble()
+        {
+            if (_slide != null || !isActiveAndEnabled) return;
+            _slide = StartCoroutine(Shudder());
+        }
+
+        private IEnumerator Shudder()
+        {
+            var home = transform.localPosition;
+            const float seconds = 0.3f;
+            for (var t = 0f; t < seconds; t += Time.deltaTime)
+            {
+                var fade = 1f - t / seconds;
+                transform.localRotation = Quaternion.Euler(0f, Mathf.Sin(t * 60f) * 8f * fade, 0f);
+                transform.localPosition = home + Vector3.up * (0.05f * Mathf.Sin(t / seconds * Mathf.PI));
+                yield return null;
+            }
+            _slide = null;
+            PlaceAt(home);
+        }
+
+        /// <summary>
+        /// At rest a crate is kinematic: solid to stand on and shoot, but physics never moves it. The player's
+        /// CharacterController acts as an infinitely heavy body, so a simulated 1 kg crate it walked or jumped into
+        /// could be flung into the sky. Only our code moves crates.
+        /// </summary>
         private void Settle()
         {
             if (_body == null) _body = GetComponent<Rigidbody>();
-            _body.isKinematic = false;
-            _body.linearVelocity = Vector3.zero;
-            _body.angularVelocity = Vector3.zero;
-            _body.Sleep(); // hundreds of crates cost nothing until something knocks them
+            _body.isKinematic = true;
+            Solid(true);
         }
     }
 }

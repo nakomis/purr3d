@@ -25,6 +25,9 @@ namespace Purr3D
         private TextMeshProUGUI _state;
         private TextMeshProUGUI _points;
         private float _target;
+        private GameObject _crosshair;
+        private TextMeshProUGUI _toast;
+        private float _toastUntil;
 
         [SerializeField, Min(0.01f)] private float fadeSeconds = 0.12f;
 
@@ -70,14 +73,41 @@ namespace Purr3D
             _target = 0f;
         }
 
+        /// <summary>The aiming dot and ring in the middle of the screen: on in rooms, where there's something to shoot.</summary>
+        public void ShowCrosshair(bool show) => _crosshair.SetActive(show);
+
+        /// <summary>A line of text near the top of the screen for a few seconds: why Purr refused a shot, say.</summary>
+        public void Toast(string text, float seconds = 4f)
+        {
+            _toast.text = text;
+            _toast.gameObject.SetActive(true);
+            _toastUntil = Time.unscaledTime + seconds;
+        }
+
         private void Update()
         {
+            if (_toast.gameObject.activeSelf && Time.unscaledTime >= _toastUntil) _toast.gameObject.SetActive(false);
             if (Mathf.Approximately(_group.alpha, _target)) return;
             _group.alpha = Mathf.MoveTowards(_group.alpha, _target, Time.unscaledDeltaTime / fadeSeconds);
         }
 
         private void Build(Transform root)
         {
+            BuildCrosshair(root);
+
+            var toast = Rect("Toast", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f));
+            toast.sizeDelta = new Vector2(1200f, 60f);
+            toast.anchoredPosition = new Vector2(0f, -40f);
+            _toast = toast.gameObject.AddComponent<TextMeshProUGUI>();
+            _toast.fontSize = 30f;
+            _toast.fontStyle = FontStyles.Bold;
+            _toast.alignment = TextAlignmentOptions.Center;
+            _toast.color = new Color(1f, 0.55f, 0.45f);
+            _toast.outlineWidth = 0.2f;
+            _toast.outlineColor = Color.black;
+            _toast.raycastTarget = false;
+            toast.gameObject.SetActive(false);
+
             var panel = Rect("Panel", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
             panel.sizeDelta = new Vector2(Width, Height);
             panel.anchoredPosition = new Vector2(0f, 40f);
@@ -114,6 +144,42 @@ namespace Purr3D
             _state = Text("State", chip, 22f, FontStyles.Bold, TextAlignmentOptions.Center);
             Fill(_state.rectTransform);
             _state.overflowMode = TextOverflowModes.Truncate;
+        }
+
+        private void BuildCrosshair(Transform root)
+        {
+            var centre = new Vector2(0.5f, 0.5f);
+            var holder = Rect("Crosshair", root, centre, centre, centre);
+            holder.sizeDelta = new Vector2(40f, 40f);
+            _crosshair = holder.gameObject;
+
+            // Four short ticks round a dot, each with a dark copy behind so it shows on pale floors too.
+            var white = new Color(1f, 1f, 1f, 0.9f);
+            var shadow = new Color(0f, 0f, 0f, 0.6f);
+            Tick(holder, Vector2.zero, new Vector2(6f, 6f), shadow, white);
+            Tick(holder, new Vector2(0f, 13f), new Vector2(3f, 10f), shadow, white);
+            Tick(holder, new Vector2(0f, -13f), new Vector2(3f, 10f), shadow, white);
+            Tick(holder, new Vector2(13f, 0f), new Vector2(10f, 3f), shadow, white);
+            Tick(holder, new Vector2(-13f, 0f), new Vector2(10f, 3f), shadow, white);
+            _crosshair.SetActive(false);
+        }
+
+        private static void Tick(Transform parent, Vector2 at, Vector2 size, Color shadow, Color colour)
+        {
+            var centre = new Vector2(0.5f, 0.5f);
+            var back = Rect("Shadow", parent, centre, centre, centre);
+            back.anchoredPosition = at;
+            back.sizeDelta = size + new Vector2(2f, 2f);
+            var backImage = back.gameObject.AddComponent<Image>();
+            backImage.color = shadow;
+            backImage.raycastTarget = false;
+
+            var front = Rect("Tick", parent, centre, centre, centre);
+            front.anchoredPosition = at;
+            front.sizeDelta = size;
+            var image = front.gameObject.AddComponent<Image>();
+            image.color = colour;
+            image.raycastTarget = false;
         }
 
         private static RectTransform Rect(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot)

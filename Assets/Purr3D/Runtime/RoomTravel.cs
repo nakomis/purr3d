@@ -31,6 +31,7 @@ namespace Purr3D
         private ScreenFade _fade;
         private TaskHud _hud;
         private TaskStandReader _reader;
+        private TaskShooter _shooter;
         private ProjectDoor _door;
         private bool _travelling;
         private CancellationTokenSource _lifetime;
@@ -55,6 +56,12 @@ namespace Purr3D
                 _reader = player.GetComponent<TaskStandReader>();
                 if (_reader == null) _reader = player.AddComponent<TaskStandReader>();
                 _reader.StandingOnChanged += OnStandingOnChanged;
+
+                // Shooting (PURR3D-7): off until you're in a room.
+                _shooter = player.GetComponent<TaskShooter>();
+                if (_shooter == null) _shooter = player.AddComponent<TaskShooter>();
+                _shooter.Hud = _hud;
+                _shooter.enabled = false;
             }
 
             try
@@ -117,6 +124,7 @@ namespace Purr3D
                 _room.Show(door.Entry, door.Colour);
                 _door = door;
                 Teleport(player, _room.ArrivalPoint);
+                Armed(true);
 
                 await _fade.In(fadeSeconds, ct);
                 _travelling = false;
@@ -147,6 +155,7 @@ namespace Purr3D
                 await _fade.Out(fadeSeconds, ct);
                 Teleport(player, _door.ReturnPoint);
                 _door = null;
+                Armed(false);
                 _room.Hide();
                 _hud.Hide();
                 await _fade.In(fadeSeconds, ct);
@@ -159,6 +168,15 @@ namespace Purr3D
             {
                 _travelling = false;
             }
+        }
+
+        /// <summary>Shooting and the crosshair are for rooms only.</summary>
+        private void Armed(bool inRoom)
+        {
+            _hud.ShowCrosshair(inRoom);
+            if (_shooter == null) return;
+            _shooter.Room = inRoom ? _room : null;
+            _shooter.enabled = inRoom;
         }
 
         private void OnStandingOnChanged(TaskCrate crate)
