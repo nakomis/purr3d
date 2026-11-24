@@ -29,6 +29,14 @@ namespace Purr3D.Core
             LatestActivity = CorridorOrder.Latest(Tasks);
         }
 
+        /// <summary>Swaps in a fresh fetch of the project's tasks (a room refresh).</summary>
+        public void Replace(List<PurrTask> tasks)
+        {
+            Tasks = tasks ?? new List<PurrTask>();
+            LatestActivity = CorridorOrder.Latest(Tasks);
+            LoadFailed = false;
+        }
+
         public static CorridorEntry Failed(PurrProject project) =>
             new CorridorEntry { Project = project, LoadFailed = true };
 

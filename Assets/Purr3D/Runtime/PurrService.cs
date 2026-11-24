@@ -124,6 +124,47 @@ namespace Purr3D
         /// <summary>A project's cached tasks (empty if its fetch failed), or null when the prefix isn't known.</summary>
         public List<PurrTask> TasksFor(string prefix) => EntryFor(prefix)?.Tasks;
 
+        /// <summary>A project's tasks were fetched again (see <see cref="RefreshTasksAsync"/>).</summary>
+        public event Action<CorridorEntry> TasksRefreshed;
+
+        private readonly Dictionary<string, Task<bool>> _refreshing = new Dictionary<string, Task<bool>>();
+
+        /// <summary>
+        /// Fetches one project's tasks again and swaps them into its <see cref="CorridorEntry"/>. True when it
+        /// worked; false (cache untouched, warning logged) when it didn't. Concurrent calls for a prefix share one
+        /// request. Never throws, except for cancellation at shutdown.
+        /// </summary>
+        public Task<bool> RefreshTasksAsync(string prefix)
+        {
+            if (prefix == null || _lifetime == null) return Task.FromResult(false);
+            if (_refreshing.TryGetValue(prefix, out var running)) return running;
+            var refresh = Refresh(prefix);
+            if (!refresh.IsCompleted) _refreshing[prefix] = refresh;
+            return refresh;
+        }
+
+        private async Task<bool> Refresh(string prefix)
+        {
+            try
+            {
+                var entry = EntryFor(prefix);
+                if (entry == null) return false;
+                var tasks = await Client.GetTasksAsync(prefix, _lifetime.Token);
+                entry.Replace(tasks);
+                TasksRefreshed?.Invoke(entry);
+                return true;
+            }
+            catch (PurrApiException e)
+            {
+                Debug.LogWarning($"[Purr] {prefix}: {e.Message}");
+                return false;
+            }
+            finally
+            {
+                _refreshing.Remove(prefix);
+            }
+        }
+
         /// <summary>Moves a task one step along (see <see cref="StateCycle"/>). Returns null when it stays put.</summary>
         public async Task<PurrTask> AdvanceAsync(PurrProject project, PurrTask task)
         {
