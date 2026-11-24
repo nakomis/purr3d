@@ -1042,6 +1042,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1640426718}
   - component: {fileID: 1640426717}
+  - component: {fileID: 1640426719}
   m_Layer: 0
   m_Name: Corridor
   m_TagString: Untagged
@@ -1062,6 +1063,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Purr3D.Runtime::Purr3D.CorridorBuilder
   doorPrefab: {fileID: 6975525073527400060, guid: bf5c9860988684d7ab91402b354f7ecf, type: 3}
+  roomTravel: {fileID: 0}
   spacing: 4
   startOffset: 6
   buildShell: 1
@@ -1091,6 +1093,21 @@ Transform:
   - {fileID: 617963865}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1640426719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640426716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66fa6f80067c44c79ffe39fa2e7adadf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Purr3D.Runtime::Purr3D.RoomTravel
+  roomScene: Room
+  roomOrigin: {x: 300, y: 0, z: 0}
+  fadeSeconds: 0.25
 --- !u!1001 &1762682258
 PrefabInstance:
   m_ObjectHideFlags: 0

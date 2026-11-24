@@ -8,5 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Purr3D/Scenes/Corridor.unity
     guid: 6ee49938b11074905820414e2a902b1d
+  - enabled: 1
+    path: Assets/Purr3D/Scenes/Room.unity
+    guid: c5d66e628dcc2424e9a5c06a5b9cb4af
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
