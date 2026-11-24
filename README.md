@@ -43,7 +43,7 @@ It's a fun side project built in Unity 6, with an art pipeline based on the [Art
 |---|---|
 | `Assets/`, `Packages/`, `ProjectSettings/` | The Unity 6 project (URP) |
 | `Assets/Purr3D/Core/` | Engine-free C#: Purr's types, JSON parsing, the state-cycling rule, the corridor's loading and ordering, the room's board layout and refresh diff, and the API client, behind an `IPurrTransport` port |
-| `Assets/Purr3D/Runtime/` | The Unity side: a `UnityWebRequest` transport, settings, the `PurrService` MonoBehaviour that scenes talk to, the `CorridorBuilder` that lays out the doors, and `RoomTravel` / `RoomBuilder`, which take you through a door into that project's room |
+| `Assets/Purr3D/Runtime/` | The Unity side: a `UnityWebRequest` transport, settings, the `PurrService` MonoBehaviour that scenes talk to, the `CorridorBuilder` that lays out the doors, and `RoomTravel` / `RoomBuilder`, which take you through a door into that project's room, plus `TaskStandReader` / `TaskHud`, which read out the crate you're standing on |
 | `tests/Purr3D.Core.Tests/` | NUnit tests for `Core`, run with plain `dotnet test`, so no Unity is needed (CI runs them too) |
 | `ArtSource/` | Working files from the ArtCraft apps (MaterialCraft, TextureCraft, SolidCraft, VectorCraft, PhotoCraft, SoundCraft, FilmCraft), stored in Git LFS |
 | `docs/guides/` | Step-by-step guides for the editor-side work |

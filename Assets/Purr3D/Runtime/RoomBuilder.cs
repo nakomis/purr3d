@@ -133,14 +133,14 @@ namespace Purr3D
 
                 if (_crates.TryGetValue(task.Ref, out var crate))
                 {
-                    crate.Bind(task, _colour);
+                    crate.Bind(Entry.Project, task, _colour);
                     if (!slide) crate.PlaceAt(position);
                     else if ((crate.transform.localPosition - position).sqrMagnitude > 0.0001f) crate.MoveTo(position);
                 }
                 else if (cratePrefab != null)
                 {
                     crate = Instantiate(cratePrefab, _crateRoot);
-                    crate.Bind(task, _colour);
+                    crate.Bind(Entry.Project, task, _colour);
                     crate.PlaceAt(position);
                     _crates[task.Ref] = crate;
                 }
@@ -204,20 +204,7 @@ namespace Purr3D
             }
         }
 
-        private Color ZoneColour(RoomZone zone)
-        {
-            float hue, saturation;
-            switch (zone.State?.Group)
-            {
-                case StateGroup.Backlog: hue = 0f; saturation = 0f; break;        // grey
-                case StateGroup.Unstarted: hue = 0.6f; saturation = 0.45f; break; // blue
-                case StateGroup.Started: hue = 0.11f; saturation = 0.6f; break;   // amber
-                case StateGroup.Completed: hue = 0.33f; saturation = 0.45f; break; // green
-                case StateGroup.Cancelled: hue = 0f; saturation = 0.45f; break;    // dull red
-                default: hue = 0.8f; saturation = 0.5f; break;                     // purple: unknown state
-            }
-            return Color.HSVToRGB(hue, saturation, zoneBrightness);
-        }
+        private Color ZoneColour(RoomZone zone) => StateColours.For(zone.State?.Group, zoneBrightness);
 
         private void Block(string blockName, Vector3 centre, Vector3 size, Material material, Color? colour, bool collide = true)
         {

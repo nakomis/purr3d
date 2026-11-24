@@ -29,6 +29,8 @@ namespace Purr3D
 
         private RoomBuilder _room;
         private ScreenFade _fade;
+        private TaskHud _hud;
+        private TaskStandReader _reader;
         private ProjectDoor _door;
         private bool _travelling;
         private CancellationTokenSource _lifetime;
@@ -40,10 +42,21 @@ namespace Purr3D
         {
             _lifetime = new CancellationTokenSource();
             _fade = ScreenFade.Create(transform);
+            _hud = TaskHud.Create(transform);
         }
 
         private async void Start()
         {
+            // Reading the crate underfoot (PURR3D-6): the player gets a reader that drives the HUD.
+            var player = GameObject.FindWithTag(PlayerTrigger.PlayerTag);
+            if (player != null)
+            {
+                // Not ??: Unity's fake-null objects slip past it.
+                _reader = player.GetComponent<TaskStandReader>();
+                if (_reader == null) _reader = player.AddComponent<TaskStandReader>();
+                _reader.StandingOnChanged += OnStandingOnChanged;
+            }
+
             try
             {
                 _room = FindAnyObjectByType<RoomBuilder>(FindObjectsInactive.Include);
@@ -75,6 +88,7 @@ namespace Purr3D
         private void OnDestroy()
         {
             if (_room != null) _room.ExitRequested -= Exit;
+            if (_reader != null) _reader.StandingOnChanged -= OnStandingOnChanged;
             _lifetime?.Cancel();
             _lifetime?.Dispose();
             _lifetime = null;
@@ -134,6 +148,7 @@ namespace Purr3D
                 Teleport(player, _door.ReturnPoint);
                 _door = null;
                 _room.Hide();
+                _hud.Hide();
                 await _fade.In(fadeSeconds, ct);
             }
             catch (OperationCanceledException)
@@ -144,6 +159,13 @@ namespace Purr3D
             {
                 _travelling = false;
             }
+        }
+
+        private void OnStandingOnChanged(TaskCrate crate)
+        {
+            var card = crate != null ? crate.Card : null;
+            if (card == null) _hud.Hide();
+            else _hud.Show(card, crate.Colour);
         }
 
         private async Task Refresh(CorridorEntry entry)
