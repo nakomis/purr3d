@@ -71,7 +71,7 @@ Then the real test, the task's **done when**:
    jq -r '"x-api-key: \(.apiKey)"' UserSettings/PurrSecrets.json \
      | curl -s -H @- -H 'content-type: application/json' -X POST \
          "$(jq -r .baseUrl UserSettings/PurrSecrets.json)/tasks/$REF/state" \
-         -d "{\"state\": \"$STATE\"}" | jq '{ref, state}'
+         -d "{\"state\": \"$STATE\"}" | jq "{ref, stateId, updatedBy}"
    ```
 
    Do it in Play mode, after the corridor has loaded: the game fetches every project at startup, so a change made before pressing Play would already be in the cache and the room would report `no changes`.
