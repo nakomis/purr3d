@@ -103,7 +103,7 @@ namespace Purr3D
 
             _title = Text("Title", panel, 26f, FontStyles.Normal, TextAlignmentOptions.TopLeft);
             _title.textWrappingMode = TextWrappingModes.Normal;
-            _title.overflowMode = TextOverflowModes.Ellipsis;
+            _title.overflowMode = TextOverflowModes.Truncate;
             _title.maxVisibleLines = 2;
             Place(_title.rectTransform, left, Pad + 52f, Width - left - Pad, 70f);
 
@@ -113,7 +113,7 @@ namespace Purr3D
             _chip = chip.gameObject.AddComponent<Image>();
             _state = Text("State", chip, 22f, FontStyles.Bold, TextAlignmentOptions.Center);
             Fill(_state.rectTransform);
-            _state.overflowMode = TextOverflowModes.Ellipsis;
+            _state.overflowMode = TextOverflowModes.Truncate;
         }
 
         private static RectTransform Rect(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot)
@@ -136,7 +136,7 @@ namespace Purr3D
             text.alignment = alignment;
             text.color = Color.white;
             text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.overflowMode = TextOverflowModes.Ellipsis;
+            text.overflowMode = TextOverflowModes.Truncate;
             text.raycastTarget = false;
             return text;
         }
