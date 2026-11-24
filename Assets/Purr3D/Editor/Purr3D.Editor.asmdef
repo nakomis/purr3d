@@ -1,7 +1,10 @@
 {
     "name": "Purr3D.Editor",
     "rootNamespace": "Purr3D.Editor",
-    "references": [],
+    "references": [
+        "Purr3D.Runtime",
+        "Unity.StarterAssets"
+    ],
     "includePlatforms": [
         "Editor"
     ],
