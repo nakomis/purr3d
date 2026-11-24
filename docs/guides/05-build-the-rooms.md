@@ -64,7 +64,17 @@ Walk into a door. Try a small project first, then HOME, which has 540 tasks.
 Then the real test, the task's **done when**:
 
 1. Count a few zones against the project's board in Purr's sandbox web UI. The zone labels show their totals.
-2. In the sandbox web UI, move one of that project's tasks to another state.
+2. While still in Play mode, move one of that project's tasks to another state. Purr's web UI is read-only for tasks, so use the API with the game's own key (the key never appears on screen). Pick a ref from the room, and a state name from its zone labels:
+
+   ```bash
+   REF=SINT-3 STATE="In Progress"
+   jq -r '"x-api-key: \(.apiKey)"' UserSettings/PurrSecrets.json \
+     | curl -s -H @- -H 'content-type: application/json' -X POST \
+         "$(jq -r .baseUrl UserSettings/PurrSecrets.json)/tasks/$REF/state" \
+         -d "{\"state\": \"$STATE\"}" | jq '{ref, state}'
+   ```
+
+   Do it in Play mode, after the corridor has loaded: the game fetches every project at startup, so a change made before pressing Play would already be in the cache and the room would report `no changes`.
 3. Walk out through the exit behind you (it's door-coloured), then back in. The crate should hop across into its new zone, and the Console shows `1 moved`.
 
 HOME's Done zone stacks its crates six high rather than running 30 m into the distance. They're real physics objects, so Dante can kick them over. They're all tidied away again next time you come in.
