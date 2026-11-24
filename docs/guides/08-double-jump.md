@@ -21,7 +21,9 @@ The Input System only sends `OnJump` on a new press, so you have to let go and p
 2. Open the **Corridor** scene and select **PlayerArmature**.
 3. Choose **Tools → Purr3D → Swap In Our Player Controller**.
 
-   This replaces *Third Person Controller* with *Player Controller* and copies every setting across: speeds, Ground Layers, the Cinemachine camera target, and the footstep sounds. The two scripts use the same field names, so the menu item copies the settings with a JSON round trip. It's one Undo step, if you want to see it again.
+   This replaces *Third Person Controller* with *Player Controller* and copies every setting across: speeds, Ground Layers, the Cinemachine camera target, and the footstep sounds. The two scripts use the same field names, so the menu item walks the old component's serialised properties with `SerializedObject` and copies each onto the property of the same name. The Console reports how many it carried over. It's one Undo step, if you want to see it again.
+
+   If **Cinemachine Camera Target** ends up empty, the camera can't follow Dante, and every control stops working: `Start` fails on it, so the controller never finds its input. The Console warns if that happens. Drag **PlayerCameraRoot** (a child of PlayerArmature) into it.
 4. Check the Inspector: **Player Controller** should be there, with a new **Purr3D: double jump** section (Air Jumps 1, Air Jump Height 1.2). There should be no *Third Person Controller*.
 5. Save the scene (⌘S).
 
