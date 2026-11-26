@@ -32,7 +32,7 @@ namespace Purr3D
             trail.time = 0.12f;
             trail.startWidth = 0.07f;
             trail.endWidth = 0f;
-            trail.material = go.GetComponent<Renderer>().material;
+            trail.sharedMaterial = go.GetComponent<Renderer>().sharedMaterial;
             trail.startColor = colour;
             trail.endColor = new Color(colour.r, colour.g, colour.b, 0f);
 
@@ -67,15 +67,25 @@ namespace Purr3D
             go.AddComponent<PuffFade>();
         }
 
-        /// <summary>An unlit-looking emissive material in the shot's colour (URP Lit, falling back to whatever exists).</summary>
+        private static readonly System.Collections.Generic.Dictionary<Color, Material> Glows =
+            new System.Collections.Generic.Dictionary<Color, Material>();
+
+        /// <summary>
+        /// The shared Unlit material (see <see cref="Purr3DMaterials"/>) in the shot's colour: one copy per colour,
+        /// made once, rather than a new material every shot (and no Shader.Find, which fails in a build).
+        /// </summary>
         private static void Glow(Renderer renderer, Color colour)
         {
-            var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
-            if (shader == null) return;
-            var material = new Material(shader);
-            material.SetColor("_BaseColor", colour);
-            material.SetColor("_Color", colour);
-            renderer.material = material;
+            if (!Glows.TryGetValue(colour, out var material) || material == null)
+            {
+                var unlit = Purr3DMaterials.Unlit;
+                if (unlit == null) return;
+                material = new Material(unlit) { name = "Shot glow" };
+                material.SetColor("_BaseColor", colour);
+                material.SetColor("_Color", colour);
+                Glows[colour] = material;
+            }
+            renderer.sharedMaterial = material;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
 

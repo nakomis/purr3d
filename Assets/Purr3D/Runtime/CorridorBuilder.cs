@@ -85,8 +85,10 @@ namespace Purr3D
             _service.CorridorProgress += OnProgress;
             _service.CorridorLoaded += Build;
             _service.CorridorFailed += OnFailed;
+            _service.KeyNeeded += OnKeyNeeded;
 
-            if (_service.IsLoading) OnProgress(_service.Progress);
+            if (_service.KeyProblem != null) OnKeyNeeded(_service.KeyProblem);
+            else if (_service.IsLoading) OnProgress(_service.Progress);
             else if (_service.LoadError != null) OnFailed(_service.LoadError);
             else if (_service.Corridor.Count > 0) Build(_service.Corridor);
             else ShowLabel("Loading projects…");
@@ -98,6 +100,7 @@ namespace Purr3D
             _service.CorridorProgress -= OnProgress;
             _service.CorridorLoaded -= Build;
             _service.CorridorFailed -= OnFailed;
+            _service.KeyNeeded -= OnKeyNeeded;
         }
 
         /// <summary>Clears any previous doors and lays out <paramref name="corridor"/>.</summary>
@@ -162,7 +165,7 @@ namespace Purr3D
             block.transform.SetParent(_shellRoot, false);
             block.transform.localPosition = centre;
             block.transform.localScale = size;
-            if (shellMaterial != null) block.GetComponent<Renderer>().sharedMaterial = shellMaterial;
+            block.GetComponent<Renderer>().sharedMaterial = shellMaterial != null ? shellMaterial : Purr3DMaterials.Shell;
         }
 
         private void Clear()
@@ -208,6 +211,9 @@ namespace Purr3D
 
         private void OnProgress(LoadProgress progress) =>
             ShowLabel(progress.Total == 0 ? "Loading projects…" : $"Loading projects… {progress.Done}/{progress.Total}");
+
+        // Shows behind the Connect to Purr screen; loading progress replaces it once a key is accepted.
+        private void OnKeyNeeded(string reason) => ShowLabel("Waiting for an API key");
 
         private void OnFailed(string error) => ShowLabel($"Couldn't reach Purr\n<size=50%>{error}</size>");
 

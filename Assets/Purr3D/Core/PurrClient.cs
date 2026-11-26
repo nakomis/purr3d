@@ -69,6 +69,16 @@ namespace Purr3D.Core
             _transport = transport ?? throw new ArgumentNullException(nameof(transport));
         }
 
+        /// <summary>
+        /// <c>GET /me</c>: the actor the key belongs to, e.g. "purr3d". A cheap way to check a key before keeping it:
+        /// a bad key throws <see cref="PurrApiException"/> with status 401.
+        /// </summary>
+        public async Task<string> GetMeAsync(CancellationToken cancellationToken = default)
+        {
+            var response = await Send("GetMe", null, "GET", "/me", null, cancellationToken);
+            return Parse("GetMe", null, response, PurrJson.ParseActor);
+        }
+
         /// <summary><c>GET /projects</c>, without archived projects.</summary>
         public async Task<List<PurrProject>> GetProjectsAsync(CancellationToken cancellationToken = default)
         {

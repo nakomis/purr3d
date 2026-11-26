@@ -66,10 +66,10 @@ It's a fun side project built in Unity 6, with an art pipeline based on the [Art
 3. Fetch the API key (needs AWS access to the Purr account):
 
    ```bash
-   scripts/fetch-api-key.sh          # sandbox; or: scripts/fetch-api-key.sh prod
+   scripts/fetch-api-key.sh          # sandbox; or: scripts/fetch-api-key.sh prod; add --player for a built app
    ```
 
-   This writes `UserSettings/PurrSecrets.json` (per-user, gitignored), which holds the base URL and the `purr3d` actor's key.
+   This writes `UserSettings/PurrSecrets.json` (per-user, gitignored), which holds the base URL and the `purr3d` actor's key. Without AWS access, skip this step: the game asks for a key when it starts, and saves it in the same place.
 
 4. Open the folder in Unity Hub (**Add → Add project from disk**).
 
