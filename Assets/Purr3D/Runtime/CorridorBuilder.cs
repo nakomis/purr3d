@@ -161,20 +161,39 @@ namespace Purr3D
             var wall = wallMaterial != null ? wallMaterial : Purr3DMaterials.CorridorWall;
             var ceiling = ceilingMaterial != null ? ceilingMaterial : Purr3DMaterials.CorridorCeiling;
 
-            Block("Floor", new Vector3(0f, -t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t), floor);
+            Run("Floor", new Vector3(0f, -t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t), floor);
             // With a lid, the walls rise into it and it overhangs them by Overhang on every side. Thin pieces that
             // only touch at a corner leak sunlight: shadow bias nudges each caster inwards and opens a crack.
             var wallHeight = buildCeiling ? height + LidThickness : height;
-            Block("Wall left", new Vector3(-(width + t) / 2f, wallHeight / 2f, zMid), new Vector3(t, wallHeight, zSpan), wall);
-            Block("Wall right", new Vector3((width + t) / 2f, wallHeight / 2f, zMid), new Vector3(t, wallHeight, zSpan), wall);
+            Run("Wall left", new Vector3(-(width + t) / 2f, wallHeight / 2f, zMid), new Vector3(t, wallHeight, zSpan), wall);
+            Run("Wall right", new Vector3((width + t) / 2f, wallHeight / 2f, zMid), new Vector3(t, wallHeight, zSpan), wall);
             Block("Back wall", new Vector3(0f, wallHeight / 2f, -backPadding - t / 2f), new Vector3(outer, wallHeight, t), wall);
             Block("End wall", new Vector3(0f, wallHeight / 2f, length + t / 2f), new Vector3(outer, wallHeight, t), wall);
             if (buildCeiling)
-                Block("Ceiling", new Vector3(0f, height + LidThickness / 2f, zMid),
+                Run("Ceiling", new Vector3(0f, height + LidThickness / 2f, zMid),
                     new Vector3(outer + 2f * Overhang, LidThickness, zSpan + 2f * (t + Overhang)), ceiling);
         }
 
         private const float LidThickness = 0.5f, Overhang = 1f;
+
+        // Long pieces are built as SegmentLength sections. One 100 m block has bounds so big that the sun's shadow
+        // culling drops it as the camera's shadow cascades slide along it, and daylight floods in. The UVs are in
+        // world metres, so the joins don't show.
+        private const float SegmentLength = 8f, SegmentOverlap = 0.25f;
+
+        private void Run(string blockName, Vector3 centre, Vector3 size, Material material)
+        {
+            var count = Mathf.Max(1, Mathf.CeilToInt(size.z / SegmentLength));
+            var piece = size.z / count;
+            var start = centre.z - size.z / 2f;
+            for (var i = 0; i < count; i++)
+            {
+                var z = start + piece * (i + 0.5f);
+                // Each section overlaps its neighbours, so shadow bias can't open a crack between them either.
+                var overlap = count > 1 ? SegmentOverlap : 0f;
+                Block($"{blockName} {i + 1}", new Vector3(centre.x, centre.y, z), new Vector3(size.x, size.y, piece + 2f * overlap), material);
+            }
+        }
 
         private void Block(string blockName, Vector3 centre, Vector3 size, Material material) =>
             TiledBox.Create(blockName, _shellRoot, centre, size, tileMetres, material != null ? material : Purr3DMaterials.Shell);
