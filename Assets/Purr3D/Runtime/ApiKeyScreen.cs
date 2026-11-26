@@ -81,7 +81,11 @@ namespace Purr3D
             _key.text = "";
             Reveal(false);
             Status("", Color.white);
-            _cancel.gameObject.SetActive(reason == null && _service.KeyProblem == null);
+            bool canCancel = reason == null && _service.KeyProblem == null;
+            _cancel.gameObject.SetActive(canCancel);
+            // On its own, "Forget saved key" moves to the centre.
+            var forget = (RectTransform)_forget.transform;
+            forget.anchoredPosition = new Vector2(canCancel ? -150f : 0f, forget.anchoredPosition.y);
             PlayerControls(false);
             _key.Select();
             _key.ActivateInputField();
