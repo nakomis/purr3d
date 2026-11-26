@@ -41,8 +41,15 @@ namespace Purr3D
         [Tooltip("Room behind the start, so the player isn't spawned against the back wall.")]
         [SerializeField, Min(0f)] private float backPadding = 3f;
 
-        [Tooltip("Leave empty for the render pipeline's default material.")]
-        [SerializeField] private Material shellMaterial;
+        [Header("Surfaces (MaterialCraft, PURR3D-15)")]
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorFloor.")]
+        [SerializeField] private Material floorMaterial;
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorWall.")]
+        [SerializeField] private Material wallMaterial;
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorCeiling.")]
+        [SerializeField] private Material ceilingMaterial;
+        [Tooltip("How many metres one copy of a surface's texture covers.")]
+        [SerializeField, Min(0.1f)] private float tileMetres = 2f;
 
         [Header("Colour")]
         [SerializeField, Range(0f, 1f)] private float saturation = 0.55f;
@@ -150,23 +157,20 @@ namespace Purr3D
             var zMid = (length - backPadding) / 2f;
             var zSpan = length + backPadding;
 
-            Block("Floor", new Vector3(0f, -t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t));
-            Block("Wall left", new Vector3(-(width + t) / 2f, height / 2f, zMid), new Vector3(t, height, zSpan));
-            Block("Wall right", new Vector3((width + t) / 2f, height / 2f, zMid), new Vector3(t, height, zSpan));
-            Block("Back wall", new Vector3(0f, height / 2f, -backPadding - t / 2f), new Vector3(outer, height, t));
-            Block("End wall", new Vector3(0f, height / 2f, length + t / 2f), new Vector3(outer, height, t));
-            if (buildCeiling) Block("Ceiling", new Vector3(0f, height + t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t));
+            var floor = floorMaterial != null ? floorMaterial : Purr3DMaterials.CorridorFloor;
+            var wall = wallMaterial != null ? wallMaterial : Purr3DMaterials.CorridorWall;
+            var ceiling = ceilingMaterial != null ? ceilingMaterial : Purr3DMaterials.CorridorCeiling;
+
+            Block("Floor", new Vector3(0f, -t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t), floor);
+            Block("Wall left", new Vector3(-(width + t) / 2f, height / 2f, zMid), new Vector3(t, height, zSpan), wall);
+            Block("Wall right", new Vector3((width + t) / 2f, height / 2f, zMid), new Vector3(t, height, zSpan), wall);
+            Block("Back wall", new Vector3(0f, height / 2f, -backPadding - t / 2f), new Vector3(outer, height, t), wall);
+            Block("End wall", new Vector3(0f, height / 2f, length + t / 2f), new Vector3(outer, height, t), wall);
+            if (buildCeiling) Block("Ceiling", new Vector3(0f, height + t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t), ceiling);
         }
 
-        private void Block(string blockName, Vector3 centre, Vector3 size)
-        {
-            var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            block.name = blockName;
-            block.transform.SetParent(_shellRoot, false);
-            block.transform.localPosition = centre;
-            block.transform.localScale = size;
-            block.GetComponent<Renderer>().sharedMaterial = shellMaterial != null ? shellMaterial : Purr3DMaterials.Shell;
-        }
+        private void Block(string blockName, Vector3 centre, Vector3 size, Material material) =>
+            TiledBox.Create(blockName, _shellRoot, centre, size, tileMetres, material != null ? material : Purr3DMaterials.Shell);
 
         private void Clear()
         {

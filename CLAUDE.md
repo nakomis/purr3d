@@ -22,6 +22,8 @@ A fun side project. Martin has used Unity before, so the aim is building the thi
 - **C# 9 only** in `Core` and `Runtime`, because that's Unity's ceiling. No file-scoped namespaces, `required`, raw string literals or `init`-only setters in Core. The test project pins `LangVersion` 9 to enforce it.
 - Newtonsoft comes from `com.unity.nuget.newtonsoft-json` in Unity, and from NuGet `Newtonsoft.Json` in the test project.
 - Art comes from the ArtCraft suite (see README). Working files go in `ArtSource/<App>/`, which is stored in LFS.
+- **Surfaces (PURR3D-15):** `ArtSource/MaterialCraft/Purr3DSurfaces.sbs` holds one graph per surface. `scripts/export-surfaces.py` exports them with `materialcraft-cli` into `Assets/Purr3D/Surfaces/Textures/` and packs metallic + smoothness (1 − roughness, in alpha) for URP. `SurfaceImportSettings` sets the imports. The builders make blocks with `TiledBox` (UVs in metres), not scaled cubes, so textures don't stretch.
+- **MaterialCraft 0.4** has no noise nodes and no templates beyond empty/PBR: noise is hand-built value noise in pixel processors. Its FX-Map scatter with `rand` put every iteration in one spot, and upscaling a small random image gave flat grey, so don't use those for noise. The MCP is `materialcraft-cli mcp --bridge 7878` against the app started with `--control 7878`; in bridge mode it can't export or save to paths, so export with the CLI from the saved `.sbs`.
 
 ## The Purr API
 
