@@ -28,6 +28,9 @@ namespace Purr3D
             renderer.sharedMaterial = material;
             // Both sides go into the shadow map, so a thin wall or lid can't drop out of it, whichever way it faces.
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
+            // Architecture takes the scene's ambient light, not the nearest light probe: each section would pick up
+            // whichever probe sits nearest its centre, and a probe baked somewhere sunny lights a patch of ceiling.
+            renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
             if (collide) go.AddComponent<BoxCollider>().size = size;
             return go;
         }

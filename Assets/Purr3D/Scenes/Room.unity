@@ -158,7 +158,12 @@ MonoBehaviour:
   wallHeight: 4
   wallThickness: 0.2
   sideMargin: 1
-  shellMaterial: {fileID: 0}
+  buildCeiling: 1
+  floorMaterial: {fileID: 0}
+  wallMaterial: {fileID: 0}
+  ceilingMaterial: {fileID: 0}
+  exitMaterial: {fileID: 0}
+  tileMetres: 2
   zoneBrightness: 0.55
   zoneLabelSize: 3
   arrivalPoint: {x: 0, y: 0, z: 1.5}
