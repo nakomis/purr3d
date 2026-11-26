@@ -22,7 +22,7 @@ namespace Purr3D.Editor
         private const string Root = "Assets/Purr3D/Surfaces/";
 
         // Bump to make Unity reimport the surfaces after changing these rules.
-        public override uint GetVersion() => 1;
+        public override uint GetVersion() => 2;
 
         private void OnPreprocessTexture()
         {
@@ -30,6 +30,9 @@ namespace Purr3D.Editor
             var importer = (TextureImporter)assetImporter;
             var name = System.IO.Path.GetFileNameWithoutExtension(assetPath).ToLowerInvariant();
 
+            // Say so: a .meta written outside Unity without a shape came in as a cubemap, which a material's
+            // texture slot silently refuses.
+            importer.textureShape = TextureImporterShape.Texture2D;
             importer.textureType = name.EndsWith("_normal") ? TextureImporterType.NormalMap : TextureImporterType.Default;
             importer.sRGBTexture = name.EndsWith("_basecolor");
             importer.alphaSource = name.EndsWith("_metallicsmoothness")
