@@ -24,7 +24,10 @@ namespace Purr3D
             go.transform.localPosition = centre;
 
             go.AddComponent<MeshFilter>().sharedMesh = Mesh(name, centre, size, tileMetres);
-            go.AddComponent<MeshRenderer>().sharedMaterial = material;
+            var renderer = go.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            // Both sides go into the shadow map, so a thin wall or lid can't drop out of it, whichever way it faces.
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.TwoSided;
             if (collide) go.AddComponent<BoxCollider>().size = size;
             return go;
         }
