@@ -41,11 +41,16 @@ namespace Purr3D
         [SerializeField, Min(0.05f)] private float wallThickness = 0.2f;
         [Tooltip("Floor either side of the outermost zones.")]
         [SerializeField, Min(0f)] private float sideMargin = 1f;
+        [Tooltip("A lid on the room. Like the corridor's: it shuts out the sun, so the room gets darker.")]
+        [SerializeField] private bool buildCeiling;
+
         [Header("Surfaces (MaterialCraft, PURR3D-15)")]
         [Tooltip("Leave empty for Resources/Purr3D/Surfaces/RoomFloor.")]
         [SerializeField] private Material floorMaterial;
         [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorWall.")]
         [SerializeField] private Material wallMaterial;
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorCeiling.")]
+        [SerializeField] private Material ceilingMaterial;
         [Tooltip("Leave empty for Resources/Purr3D/Surfaces/DoorFace.")]
         [SerializeField] private Material exitMaterial;
         [Tooltip("How many metres one copy of a surface's texture covers.")]
@@ -195,6 +200,11 @@ namespace Purr3D
             Block("Wall right", new Vector3((width + t) / 2f, wallHeight / 2f, depth / 2f), new Vector3(t, wallHeight, depth), wall, null);
             Block("Back wall", new Vector3(0f, wallHeight / 2f, depth + t / 2f), new Vector3(width + 2f * t, wallHeight, t), wall, null);
             Block("Entrance wall", new Vector3(0f, wallHeight / 2f, -t / 2f), new Vector3(width + 2f * t, wallHeight, t), wall, null);
+            if (buildCeiling)
+            {
+                var ceiling = ceilingMaterial != null ? ceilingMaterial : Purr3DMaterials.CorridorCeiling;
+                Block("Ceiling", new Vector3(0f, wallHeight + t / 2f, depth / 2f), new Vector3(width + 2f * t, t, depth + 2f * t), ceiling, null);
+            }
 
             // The way out: a door-coloured panel on the entrance wall, with its trigger in front.
             Block("Exit", new Vector3(0f, 1.1f, 0.02f), new Vector3(1.2f, 2.2f, 0.04f), exit, _colour, collide: false);
