@@ -41,8 +41,20 @@ namespace Purr3D
         [SerializeField, Min(0.05f)] private float wallThickness = 0.2f;
         [Tooltip("Floor either side of the outermost zones.")]
         [SerializeField, Min(0f)] private float sideMargin = 1f;
-        [Tooltip("Leave empty for the render pipeline's default material.")]
-        [SerializeField] private Material shellMaterial;
+        [Tooltip("A lid on the room. Like the corridor's: it shuts out the sun, so the room gets darker.")]
+        [SerializeField] private bool buildCeiling;
+
+        [Header("Surfaces (MaterialCraft, PURR3D-15)")]
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/RoomFloor.")]
+        [SerializeField] private Material floorMaterial;
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorWall.")]
+        [SerializeField] private Material wallMaterial;
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/CorridorCeiling.")]
+        [SerializeField] private Material ceilingMaterial;
+        [Tooltip("Leave empty for Resources/Purr3D/Surfaces/DoorFace.")]
+        [SerializeField] private Material exitMaterial;
+        [Tooltip("How many metres one copy of a surface's texture covers.")]
+        [SerializeField, Min(0.1f)] private float tileMetres = 2f;
 
         [Header("Zones")]
         [SerializeField, Range(0f, 1f)] private float zoneBrightness = 0.55f;
@@ -179,14 +191,26 @@ namespace Purr3D
             var width = Mathf.Max(plan.Width, 4f) + 2f * sideMargin;
             var depth = plan.Depth;
 
-            Block("Floor", new Vector3(0f, -t / 2f, depth / 2f), new Vector3(width + 2f * t, t, depth + 2f * t), shellMaterial, null);
-            Block("Wall left", new Vector3(-(width + t) / 2f, wallHeight / 2f, depth / 2f), new Vector3(t, wallHeight, depth), shellMaterial, null);
-            Block("Wall right", new Vector3((width + t) / 2f, wallHeight / 2f, depth / 2f), new Vector3(t, wallHeight, depth), shellMaterial, null);
-            Block("Back wall", new Vector3(0f, wallHeight / 2f, depth + t / 2f), new Vector3(width + 2f * t, wallHeight, t), shellMaterial, null);
-            Block("Entrance wall", new Vector3(0f, wallHeight / 2f, -t / 2f), new Vector3(width + 2f * t, wallHeight, t), shellMaterial, null);
+            var floor = floorMaterial != null ? floorMaterial : Purr3DMaterials.RoomFloor;
+            var wall = wallMaterial != null ? wallMaterial : Purr3DMaterials.CorridorWall;
+            var exit = exitMaterial != null ? exitMaterial : Purr3DMaterials.DoorFace;
+
+            Block("Floor", new Vector3(0f, -t / 2f, depth / 2f), new Vector3(width + 2f * t, t, depth + 2f * t), floor, null);
+            // With a lid, the walls rise into it and it overhangs them (see CorridorBuilder: shadow leaks at corners).
+            var h = buildCeiling ? wallHeight + LidThickness : wallHeight;
+            Block("Wall left", new Vector3(-(width + t) / 2f, h / 2f, depth / 2f), new Vector3(t, h, depth), wall, null);
+            Block("Wall right", new Vector3((width + t) / 2f, h / 2f, depth / 2f), new Vector3(t, h, depth), wall, null);
+            Block("Back wall", new Vector3(0f, h / 2f, depth + t / 2f), new Vector3(width + 2f * t, h, t), wall, null);
+            Block("Entrance wall", new Vector3(0f, h / 2f, -t / 2f), new Vector3(width + 2f * t, h, t), wall, null);
+            if (buildCeiling)
+            {
+                var ceiling = ceilingMaterial != null ? ceilingMaterial : Purr3DMaterials.CorridorCeiling;
+                Block("Ceiling", new Vector3(0f, wallHeight + LidThickness / 2f, depth / 2f),
+                    new Vector3(width + 2f * (t + Overhang), LidThickness, depth + 2f * (t + Overhang)), ceiling, null);
+            }
 
             // The way out: a door-coloured panel on the entrance wall, with its trigger in front.
-            Block("Exit", new Vector3(0f, 1.1f, 0.02f), new Vector3(1.2f, 2.2f, 0.04f), shellMaterial, _colour, collide: false);
+            Block("Exit", new Vector3(0f, 1.1f, 0.02f), new Vector3(1.2f, 2.2f, 0.04f), exit, _colour, collide: false);
             Label(_floorRoot, "Exit label", "Back to the corridor", 1.2f, new Vector3(0f, 2.45f, 0.05f), Quaternion.Euler(0f, 180f, 0f), new Vector2(3f, 0.4f));
 
             foreach (var zone in plan.Zones)
@@ -195,7 +219,7 @@ namespace Purr3D
                 Block($"Zone {zone.Name}",
                     new Vector3(zone.CentreX, 0.005f, frontMargin - 0.6f + zoneDepth / 2f),
                     new Vector3(zone.Width - 0.2f, 0.01f, zoneDepth),
-                    shellMaterial, ZoneColour(zone), collide: false);
+                    Purr3DMaterials.Shell, ZoneColour(zone), collide: false);
 
                 // Lying flat at the front of the zone, reading from the entrance.
                 Label(_floorRoot, $"Label {zone.Name}", $"{zone.Name}\n<size=60%>{zone.Count}</size>", zoneLabelSize,
@@ -206,17 +230,13 @@ namespace Purr3D
 
         private Color ZoneColour(RoomZone zone) => StateColours.For(zone.State?.Group, zoneBrightness);
 
+        private const float LidThickness = 0.5f, Overhang = 1f;
+
         private void Block(string blockName, Vector3 centre, Vector3 size, Material material, Color? colour, bool collide = true)
         {
-            var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            block.name = blockName;
-            block.transform.SetParent(_floorRoot, false);
-            block.transform.localPosition = centre;
-            block.transform.localScale = size;
-            if (!collide) Destroy(block.GetComponent<Collider>());
-
+            var block = TiledBox.Create(blockName, _floorRoot, centre, size, tileMetres,
+                material != null ? material : Purr3DMaterials.Shell, collide);
             var renderer = block.GetComponent<Renderer>();
-            renderer.sharedMaterial = material != null ? material : Purr3DMaterials.Shell;
             if (colour.HasValue)
             {
                 var props = new MaterialPropertyBlock();
