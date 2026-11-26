@@ -162,12 +162,19 @@ namespace Purr3D
             var ceiling = ceilingMaterial != null ? ceilingMaterial : Purr3DMaterials.CorridorCeiling;
 
             Block("Floor", new Vector3(0f, -t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t), floor);
-            Block("Wall left", new Vector3(-(width + t) / 2f, height / 2f, zMid), new Vector3(t, height, zSpan), wall);
-            Block("Wall right", new Vector3((width + t) / 2f, height / 2f, zMid), new Vector3(t, height, zSpan), wall);
-            Block("Back wall", new Vector3(0f, height / 2f, -backPadding - t / 2f), new Vector3(outer, height, t), wall);
-            Block("End wall", new Vector3(0f, height / 2f, length + t / 2f), new Vector3(outer, height, t), wall);
-            if (buildCeiling) Block("Ceiling", new Vector3(0f, height + t / 2f, zMid), new Vector3(outer, t, zSpan + 2f * t), ceiling);
+            // With a lid, the walls rise into it and it overhangs them by Overhang on every side. Thin pieces that
+            // only touch at a corner leak sunlight: shadow bias nudges each caster inwards and opens a crack.
+            var wallHeight = buildCeiling ? height + LidThickness : height;
+            Block("Wall left", new Vector3(-(width + t) / 2f, wallHeight / 2f, zMid), new Vector3(t, wallHeight, zSpan), wall);
+            Block("Wall right", new Vector3((width + t) / 2f, wallHeight / 2f, zMid), new Vector3(t, wallHeight, zSpan), wall);
+            Block("Back wall", new Vector3(0f, wallHeight / 2f, -backPadding - t / 2f), new Vector3(outer, wallHeight, t), wall);
+            Block("End wall", new Vector3(0f, wallHeight / 2f, length + t / 2f), new Vector3(outer, wallHeight, t), wall);
+            if (buildCeiling)
+                Block("Ceiling", new Vector3(0f, height + LidThickness / 2f, zMid),
+                    new Vector3(outer + 2f * Overhang, LidThickness, zSpan + 2f * (t + Overhang)), ceiling);
         }
+
+        private const float LidThickness = 0.5f, Overhang = 1f;
 
         private void Block(string blockName, Vector3 centre, Vector3 size, Material material) =>
             TiledBox.Create(blockName, _shellRoot, centre, size, tileMetres, material != null ? material : Purr3DMaterials.Shell);

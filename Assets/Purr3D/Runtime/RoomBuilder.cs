@@ -196,14 +196,17 @@ namespace Purr3D
             var exit = exitMaterial != null ? exitMaterial : Purr3DMaterials.DoorFace;
 
             Block("Floor", new Vector3(0f, -t / 2f, depth / 2f), new Vector3(width + 2f * t, t, depth + 2f * t), floor, null);
-            Block("Wall left", new Vector3(-(width + t) / 2f, wallHeight / 2f, depth / 2f), new Vector3(t, wallHeight, depth), wall, null);
-            Block("Wall right", new Vector3((width + t) / 2f, wallHeight / 2f, depth / 2f), new Vector3(t, wallHeight, depth), wall, null);
-            Block("Back wall", new Vector3(0f, wallHeight / 2f, depth + t / 2f), new Vector3(width + 2f * t, wallHeight, t), wall, null);
-            Block("Entrance wall", new Vector3(0f, wallHeight / 2f, -t / 2f), new Vector3(width + 2f * t, wallHeight, t), wall, null);
+            // With a lid, the walls rise into it and it overhangs them (see CorridorBuilder: shadow leaks at corners).
+            var h = buildCeiling ? wallHeight + LidThickness : wallHeight;
+            Block("Wall left", new Vector3(-(width + t) / 2f, h / 2f, depth / 2f), new Vector3(t, h, depth), wall, null);
+            Block("Wall right", new Vector3((width + t) / 2f, h / 2f, depth / 2f), new Vector3(t, h, depth), wall, null);
+            Block("Back wall", new Vector3(0f, h / 2f, depth + t / 2f), new Vector3(width + 2f * t, h, t), wall, null);
+            Block("Entrance wall", new Vector3(0f, h / 2f, -t / 2f), new Vector3(width + 2f * t, h, t), wall, null);
             if (buildCeiling)
             {
                 var ceiling = ceilingMaterial != null ? ceilingMaterial : Purr3DMaterials.CorridorCeiling;
-                Block("Ceiling", new Vector3(0f, wallHeight + t / 2f, depth / 2f), new Vector3(width + 2f * t, t, depth + 2f * t), ceiling, null);
+                Block("Ceiling", new Vector3(0f, wallHeight + LidThickness / 2f, depth / 2f),
+                    new Vector3(width + 2f * (t + Overhang), LidThickness, depth + 2f * (t + Overhang)), ceiling, null);
             }
 
             // The way out: a door-coloured panel on the entrance wall, with its trigger in front.
@@ -226,6 +229,8 @@ namespace Purr3D
         }
 
         private Color ZoneColour(RoomZone zone) => StateColours.For(zone.State?.Group, zoneBrightness);
+
+        private const float LidThickness = 0.5f, Overhang = 1f;
 
         private void Block(string blockName, Vector3 centre, Vector3 size, Material material, Color? colour, bool collide = true)
         {
